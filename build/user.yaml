@@ -1,0 +1,29 @@
+swagger: '2.0'
+info:
+  version: 1.0.0
+  title: ''
+paths:
+  /User:
+    tag: User
+    get:
+      responses:
+        '200': null
+  /User/userId:
+    post:
+      responses:
+        '200': null
+    update:
+      parameter: null
+      responses:
+        '200': null
+    delete:
+      responses:
+        '200': null
+definitions:
+  User:
+    type: object
+    required:
+      - nickname
+    properties:
+      nickname:
+        type: string
