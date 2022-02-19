@@ -2,7 +2,6 @@ import express from 'express';
 import UserRouter from "./routers/UserRouter";
 import ArticleRouter from "./routers/ArticleRouter";
 import swaggerJSDoc, {SwaggerDefinition} from "swagger-jsdoc";
-import {SwaggerOptions} from "swagger-ui-express";
 import swaggerUi from 'swagger-ui-express'
 
 const app = express();
@@ -15,6 +14,8 @@ app.use(express.json());
 
 const swaggerDefinitions : SwaggerDefinition = {
     swagger : '2.0',
+    host : "52.78.191.78:3000",
+    schemes : ["https"],
     info : {
         title : 'Osori Server',
         version : '1.0.0',
@@ -37,6 +38,6 @@ app.get('/', (req, res, next) => {
 app.use('/user', UserRouter);
 app.use('/article', ArticleRouter);
 
-app.listen(3000, async () => {
+app.listen(443, async () => {
     console.log('server started')
 })
