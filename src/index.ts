@@ -5,7 +5,15 @@ import swaggerJSDoc, {SwaggerDefinition} from "swagger-jsdoc";
 import swaggerUi from 'swagger-ui-express'
 
 const app = express();
-const port = 4040;
+let port = 3000;
+
+//Run with ts-node line port={port} parameter
+process.argv.forEach((arg) => {
+    if (arg.startsWith('port')) {
+        const arr = arg.split('port=');
+        port = Number(arr[1]);
+    }
+})
 
 app.use(express.json());
 
