@@ -1,9 +1,57 @@
 swagger: '2.0'
+basePath: 'https://52.78.191.78:3000'
+servers:
+  - description: Base Url
+    url: 'https://52.78.191.78:3000'
 info:
   version: 1.0.0
   title: ''
 paths:
+  /user:
+    get:
+      parameters:
+        - in: query
+          name: userId
+          schema:
+            type: number
+          required: true
+          description: 조회할 유저의 ID
+      tags:
+        - User
+      responses:
+        '200':
+          description: OK
+  /users:
+    get:
+      tags:
+        - User
+      responses:
+        '200':
+          description: OK
+  '/user/{userId}':
+    post:
+      tags:
+        - User
+      responses:
+        '200': null
+    update:
+      tags:
+        - User
+      parameter: null
+      responses:
+        '200': null
+    delete:
+      tags:
+        - User
+      responses:
+        '200': null
   /article:
+    get:
+      tags:
+        - Articles
+      responses:
+        '200': null
+  /articles:
     get:
       tags:
         - Articles

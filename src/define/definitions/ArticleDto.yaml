@@ -1,0 +1,28 @@
+type: object
+required:
+  - creatorId
+  - title
+  - contents
+properties:
+  id:
+    type: number
+  creatorId:
+    type: number
+  categoryId:
+    type: number
+  title:
+    type: string
+  viewCount:
+    type: number
+  likeCount:
+    type: number
+  tags:
+    type: string
+  contents:
+    type: string
+  isPublished:
+    type: boolean
+  createDate:
+    type: Date
+  modifyDate:
+    type: Date

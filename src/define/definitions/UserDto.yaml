@@ -1,0 +1,32 @@
+type: object
+required:
+  - nickname
+  - login_type
+properties:
+  id:
+    type: number
+  loginType:
+    type: string
+    enum : ['NONE', 'KAKAO', 'GOOGLE', 'APPLE']
+  externalId:
+    type: number
+  nickname:
+    type: string
+  gender:
+    type: string
+  email:
+    type: string
+  name:
+    type: string
+  phoneNumber:
+    type: string
+  profileImg:
+    type: number
+  ageRange:
+    type: string
+  birthday:
+    type: string
+  createDate:
+    type: Date
+  modifyDate:
+    type: Date

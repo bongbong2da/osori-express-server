@@ -1,0 +1,29 @@
+article:
+  get:
+    tags:
+      - Articles
+    responses:
+      '200':
+articles:
+  get:
+    tags:
+      - Articles
+    responses:
+      '200':
+article-id:
+  post:
+    tags:
+      - Articles
+    responses:
+      '200':
+  update:
+    tags:
+      - Articles
+    parameter:
+    responses:
+      '200':
+  delete:
+    tags:
+      - Articles
+    responses:
+      '200':

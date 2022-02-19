@@ -1,11 +1,12 @@
 swagger: "2.0"
+basePath: "https://52.78.191.78:3000"
+servers:
+    - description: Base Url
+      url: https://52.78.191.78:3000
 info:
     version : "1.0.0"
     title : ""
 paths:
-    $ref : './article.yaml#/paths'
+    $ref : './paths/paths.yaml'
 definitions:
-    UserDto:
-        $ref : './user.yaml#/User'
-    ArticleDto:
-        $ref : './article.yaml#/Article'
+    $ref : './definitions/definitions.yaml'

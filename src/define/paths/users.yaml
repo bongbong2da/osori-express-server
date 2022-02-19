@@ -1,0 +1,38 @@
+user:
+  get:
+    parameters:
+      - in : query
+        name : userId
+        schema:
+          type: number
+        required: true
+        description : 조회할 유저의 ID
+    tags:
+      - User
+    responses:
+      '200':
+        description: OK
+users:
+  get:
+    tags:
+      - User
+    responses:
+      '200':
+        description: OK
+user-id:
+  post:
+    tags:
+      - User
+    responses:
+      '200':
+  update:
+    tags:
+      - User
+    parameter:
+    responses:
+      '200':
+  delete:
+    tags:
+      - User
+    responses:
+      '200':
