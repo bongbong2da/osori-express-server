@@ -5,7 +5,7 @@ import swaggerJSDoc, {SwaggerDefinition} from "swagger-jsdoc";
 import swaggerUi from 'swagger-ui-express'
 
 const app = express();
-const port = 53;
+const port = 4040;
 
 app.use(express.json());
 
