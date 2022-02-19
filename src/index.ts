@@ -5,6 +5,7 @@ import swaggerJSDoc, {SwaggerDefinition} from "swagger-jsdoc";
 import swaggerUi from 'swagger-ui-express'
 
 const app = express();
+const port = 443;
 
 app.use(express.json());
 
@@ -38,6 +39,6 @@ app.get('/', (req, res, next) => {
 app.use('/user', UserRouter);
 app.use('/article', ArticleRouter);
 
-app.listen(443, async () => {
-    console.log('server started')
+app.listen(port, async () => {
+    console.log('SERVER_STARTED',port)
 })
