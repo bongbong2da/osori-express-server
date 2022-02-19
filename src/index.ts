@@ -24,7 +24,7 @@ const swaggerDefinitions : SwaggerDefinition = {
 
 const swagger = swaggerJSDoc({
     swaggerDefinition : swaggerDefinitions,
-    apis:["build/user.yaml"]
+    apis:["build/swagger.yaml"]
 })
 
 app.use('/docs', swaggerUi.serve, swaggerUi.setup(swagger,{explorer:true}))

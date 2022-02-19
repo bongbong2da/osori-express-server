@@ -1,58 +1,54 @@
 
 paths:
-  /User:
+  /article:
     get:
       tags:
-        - User
+        - Articles
       responses:
         '200':
-  /User/{userId}:
+  /article/{articleId}:
     post:
       tags:
-        - User
+        - Articles
       responses:
         '200':
     update:
       tags:
-        - User
+        - Articles
       parameter:
       responses:
         '200':
     delete:
       tags:
-        - User
+        - Articles
       responses:
         '200':
 
-User:
+Article:
   type: object
   required:
-    - nickname
-    - login_type
+    - creatorId
+    - title
+    - contents
   properties:
     id:
       type: number
-    loginType:
-      type: string
-      enum : ['NONE', 'KAKAO', 'GOOGLE', 'APPLE']
-    externalId:
+    creatorId:
       type: number
-    nickname:
-      type: string
-    gender:
-      type: string
-    email:
-      type: string
-    name:
-      type: string
-    phoneNumber:
-      type: string
-    profileImg:
+    categoryId:
       type: number
-    ageRange:
+    title:
       type: string
-    birthday:
+    viewCount:
+      type: number
+    likeCount:
+      type: number
+    tags:
       type: string
+    contents:
+      type: string
+    isPublished:
+      type: boolean
     createDate:
       type: Date
     modifyDate:

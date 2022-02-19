@@ -1,0 +1,11 @@
+swagger: "2.0"
+info:
+    version : "1.0.0"
+    title : ""
+paths:
+    $ref : './article.yaml#/paths'
+definitions:
+    UserDto:
+        $ref : './user.yaml#/User'
+    ArticleDto:
+        $ref : './article.yaml#/Article'
