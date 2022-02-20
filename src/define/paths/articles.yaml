@@ -1,9 +1,3 @@
-article:
-  get:
-    tags:
-      - Articles
-    responses:
-      '200':
 articles:
   get:
     tags:
@@ -11,6 +5,18 @@ articles:
     responses:
       '200':
 article-id:
+  get:
+    parameters:
+      - in: path
+        name: articleId
+        schema:
+          type: number
+        required: true
+        description: 조회할 글의 ID
+    tags:
+      - Articles
+    responses:
+      '200':
   post:
     tags:
       - Articles

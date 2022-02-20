@@ -9,7 +9,7 @@ const User = sequelize.user;
 /**
  * @getUser
  */
-UserRouter.get('/:userId', (req, res) => {
+UserRouter.get('/user/:userId', (req, res) => {
     const userId = req.params.userId;
     if (!isUndefined(userId)) {
         User.findOne({where : {id : userId}}).then((result) => {
@@ -25,14 +25,14 @@ UserRouter.get('/:userId', (req, res) => {
 })
 
 /**
- * @getUser
+ * @getUsers
  */
-UserRouter.get('/', async (req, res) => {
+UserRouter.get('/users', async (req, res) => {
     await User.findAll().then((result) => {
         if (result !== null) {
             res.send(result)
         } else {
-            res.send('ARTICLE_NOT_FOUND')
+            res.send('USERS_NOT_FOUND')
         }
     }).catch((e) => {
         res.send('SERVER_ERROR')
@@ -42,7 +42,7 @@ UserRouter.get('/', async (req, res) => {
 /**
  * @createUser
  */
-UserRouter.post('/', (req, res) => {
+UserRouter.post('/user', (req, res) => {
     const creatingUser = req.body as user;
     console.log('creating', creatingUser);
     User.create(creatingUser).then(result => {
@@ -58,7 +58,7 @@ UserRouter.post('/', (req, res) => {
 /**
  * @updateUser
  */
-UserRouter.put('/:userId', (req, res) => {
+UserRouter.put('/user/:userId', (req, res) => {
     const userId = req.params.userId;
     const updatingUser = req.body as user;
     if (Number(userId) !== updatingUser.id) {
@@ -80,7 +80,7 @@ UserRouter.put('/:userId', (req, res) => {
 /**
  * @deleteUser
  */
-UserRouter.delete('/:userId', (req, res) => {
+UserRouter.delete('/user/:userId', (req, res) => {
     const userId = req.params.userId;
     console.log('deleting', userId);
     User.destroy({where : {id : userId}}).then((result) => {

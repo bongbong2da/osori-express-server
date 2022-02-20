@@ -1,8 +1,9 @@
 swagger: "2.0"
-basePath: "https://52.78.191.78:3000"
+basePath: "osori.team-penthouse.com/"
+host : "osori.team-penthouse.com/"
 servers:
     - description: Base Url
-      url: https://52.78.191.78:3000
+      url: https://team-penthouse.com/
 info:
     version : "1.0.0"
     title : ""
