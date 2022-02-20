@@ -1,16 +1,24 @@
 swagger: '2.0'
-basePath: 'https://52.78.191.78:3000'
+basePath: osori.team-penthouse.com/
+host: osori.team-penthouse.com/
 servers:
   - description: Base Url
-    url: 'https://52.78.191.78:3000'
+    url: 'https://team-penthouse.com/'
 info:
   version: 1.0.0
   title: ''
 paths:
-  /user:
+  /users:
+    get:
+      tags:
+        - User
+      responses:
+        '200':
+          description: OK
+  '/user/{userId}':
     get:
       parameters:
-        - in: query
+        - in: path
           name: userId
           schema:
             type: number
@@ -21,14 +29,6 @@ paths:
       responses:
         '200':
           description: OK
-  /users:
-    get:
-      tags:
-        - User
-      responses:
-        '200':
-          description: OK
-  '/user/{userId}':
     post:
       tags:
         - User
@@ -45,12 +45,6 @@ paths:
         - User
       responses:
         '200': null
-  /article:
-    get:
-      tags:
-        - Articles
-      responses:
-        '200': null
   /articles:
     get:
       tags:
@@ -58,6 +52,18 @@ paths:
       responses:
         '200': null
   '/article/{articleId}':
+    get:
+      parameters:
+        - in: path
+          name: articleId
+          schema:
+            type: number
+          required: true
+          description: 조회할 글의 ID
+      tags:
+        - Articles
+      responses:
+        '200': null
     post:
       tags:
         - Articles
