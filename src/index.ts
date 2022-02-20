@@ -3,6 +3,7 @@ import UserRouter from "./routers/UserRouter";
 import ArticleRouter from "./routers/ArticleRouter";
 import swaggerJSDoc, {SwaggerDefinition} from "swagger-jsdoc";
 import swaggerUi from 'swagger-ui-express'
+import cors from 'cors'
 
 const app = express();
 let port = 3000;
@@ -15,6 +16,8 @@ process.argv.forEach((arg) => {
     }
 })
 
+app.use(cors());
+
 app.use(express.json());
 
 /**
@@ -23,7 +26,7 @@ app.use(express.json());
 
 const swaggerDefinitions : SwaggerDefinition = {
     swagger : '2.0',
-    host : "52.78.191.78:3000",
+    host : "osori.team-penthouse.com",
     schemes : ["https"],
     info : {
         title : 'Osori Server',
@@ -44,7 +47,7 @@ app.get('/', (req, res, next) => {
     res.send('OSORI_SERVER')
 });
 
-app.use('/user', UserRouter);
+app.use(UserRouter);
 app.use('/article', ArticleRouter);
 
 app.listen(port, async () => {
