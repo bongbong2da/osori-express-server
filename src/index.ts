@@ -31,7 +31,7 @@ const swaggerDefinitions : SwaggerDefinition = {
     info : {
         title : 'Osori Server',
         version : '1.0.0',
-        description : 'Osori Server Swagger OpenAPI 3.0',
+        description : '오소리 서버 Swagger OpenAPI 3.0',
     },
 }
 
