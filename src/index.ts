@@ -42,7 +42,6 @@ const swagger = swaggerJSDoc({
 
 app.use('/docs', swaggerUi.serve, swaggerUi.setup(swagger,{explorer:true}))
 
-
 app.get('/', (req, res, next) => {
     res.send('OSORI_SERVER')
 });
