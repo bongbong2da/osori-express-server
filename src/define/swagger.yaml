@@ -1,9 +1,9 @@
 swagger: "2.0"
-basePath: "https://orosri.team-penthouse.com"
-host : "https://orosri.team-penthouse.com"
+basePath: "https://osori.team-penthouse.com"
+host : "https://osori.team-penthouse.com"
 servers:
     - description: Base Url
-      url: https://orosri.team-penthouse.com
+      url: https://osori.team-penthouse.com
 info:
     version : "1.0.0"
     title : ""
