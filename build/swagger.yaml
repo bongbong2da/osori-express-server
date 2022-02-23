@@ -1,9 +1,9 @@
 swagger: '2.0'
-basePath: osori.team-penthouse.com/
-host: osori.team-penthouse.com/
+basePath: 'localhost:3000'
+host: 'localhost:3000'
 servers:
   - description: Base Url
-    url: 'https://team-penthouse.com/'
+    url: 'localhost:3000'
 info:
   version: 1.0.0
   title: ''
@@ -15,6 +15,41 @@ paths:
       responses:
         '200':
           description: OK
+        '400':
+          description: BAD_REQUEST
+        '401':
+          description: FAILED_TO_ATHORIZE
+        '404':
+          description: NOT_FOUND
+        '500':
+          description: SERVER_ERROR
+  /user:
+    post:
+      requestBody:
+        description: Body
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                nickname:
+                  type: string
+                loginType:
+                  type: string
+      tags:
+        - User
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: BAD_REQUEST
+        '401':
+          description: FAILED_TO_ATHORIZE
+        '404':
+          description: NOT_FOUND
+        '500':
+          description: SERVER_ERROR
   '/user/{userId}':
     get:
       parameters:
@@ -29,28 +64,92 @@ paths:
       responses:
         '200':
           description: OK
-    post:
-      tags:
-        - User
-      responses:
-        '200': null
+        '400':
+          description: BAD_REQUEST
+        '401':
+          description: FAILED_TO_ATHORIZE
+        '404':
+          description: NOT_FOUND
+        '500':
+          description: SERVER_ERROR
     update:
       tags:
         - User
       parameter: null
       responses:
-        '200': null
+        '200':
+          description: OK
+        '400':
+          description: BAD_REQUEST
+        '401':
+          description: FAILED_TO_ATHORIZE
+        '404':
+          description: NOT_FOUND
+        '500':
+          description: SERVER_ERROR
     delete:
+      parameters:
+        - in: path
+          name: userId
+          schema:
+            type: number
+          required: true
+          description: 삭제할 유저의 ID
       tags:
         - User
       responses:
-        '200': null
+        '200':
+          description: OK
+        '400':
+          description: BAD_REQUEST
+        '401':
+          description: FAILED_TO_ATHORIZE
+        '404':
+          description: NOT_FOUND
+        '500':
+          description: SERVER_ERROR
   /articles:
     get:
       tags:
         - Articles
       responses:
-        '200': null
+        '200':
+          description: OK
+        '400':
+          description: BAD_REQUEST
+        '401':
+          description: FAILED_TO_ATHORIZE
+        '404':
+          description: NOT_FOUND
+        '500':
+          description: SERVER_ERROR
+  /article:
+    post:
+      requestBody:
+        description: Body
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                nickname:
+                  type: string
+                loginType:
+                  type: string
+      tags:
+        - Articles
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: BAD_REQUEST
+        '401':
+          description: FAILED_TO_ATHORIZE
+        '404':
+          description: NOT_FOUND
+        '500':
+          description: SERVER_ERROR
   '/article/{articleId}':
     get:
       parameters:
@@ -63,23 +162,51 @@ paths:
       tags:
         - Articles
       responses:
-        '200': null
-    post:
-      tags:
-        - Articles
-      responses:
-        '200': null
+        '200':
+          '400':
+            description: BAD_REQUEST
+          '401':
+            description: FAILED_TO_ATHORIZE
+          '404':
+            description: NOT_FOUND
+          '500':
+            description: SERVER_ERROR
+          description: OK
     update:
       tags:
         - Articles
-      parameter: null
       responses:
-        '200': null
+        '200':
+          description: OK
+        '400':
+          description: BAD_REQUEST
+        '401':
+          description: FAILED_TO_ATHORIZE
+        '404':
+          description: NOT_FOUND
+        '500':
+          description: SERVER_ERROR
     delete:
       tags:
         - Articles
+      parameters:
+        - in: path
+          name: articleId
+          schema:
+            type: number
+          required: true
+          description: 삭제할 글의 ID
       responses:
-        '200': null
+        '200':
+          description: OK
+        '400':
+          description: BAD_REQUEST
+        '401':
+          description: FAILED_TO_ATHORIZE
+        '404':
+          description: NOT_FOUND
+        '500':
+          description: SERVER_ERROR
 definitions:
   UserDto:
     type: object

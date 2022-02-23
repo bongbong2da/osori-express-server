@@ -1,20 +1,20 @@
 import express from 'express';
-import UserRouter from "./routers/UserRouter";
-import ArticleRouter from "./routers/ArticleRouter";
-import swaggerJSDoc, {SwaggerDefinition} from "swagger-jsdoc";
-import swaggerUi from 'swagger-ui-express'
-import cors from 'cors'
+import swaggerJSDoc, { SwaggerDefinition } from 'swagger-jsdoc';
+import swaggerUi from 'swagger-ui-express';
+import cors from 'cors';
+import ArticleRouter from './routers/ArticleRouter';
+import UserRouter from './routers/UserRouter';
 
 const app = express();
 let port = 3000;
 
-//Run with ts-node line port={port} parameter
+// Run with ts-node line port={port} parameter
 process.argv.forEach((arg) => {
-    if (arg.startsWith('port')) {
-        const arr = arg.split('port=');
-        port = Number(arr[1]);
-    }
-})
+  if (arg.startsWith('port')) {
+    const arr = arg.split('port=');
+    port = Number(arr[1]);
+  }
+});
 
 app.use(cors());
 
@@ -25,30 +25,30 @@ app.use(express.json());
  */
 
 const swaggerDefinitions : SwaggerDefinition = {
-    swagger : '2.0',
-    host : "osori.team-penthouse.com",
-    schemes : ["https"],
-    info : {
-        title : 'Osori Server',
-        version : '1.0.0',
-        description : '오소리 서버 Swagger OpenAPI 3.0',
-    },
-}
+  swagger: '2.0',
+  host: 'localhost:3000',
+  // schemes : ["https"],
+  info: {
+    title: 'Osori Server',
+    version: '1.0.0',
+    description: '오소리 서버 Swagger OpenAPI 3.0',
+  },
+};
 
 const swagger = swaggerJSDoc({
-    swaggerDefinition : swaggerDefinitions,
-    apis:["build/swagger.yaml"]
-})
+  swaggerDefinition: swaggerDefinitions,
+  apis: ['build/swagger.yaml'],
+});
 
-app.use('/docs', swaggerUi.serve, swaggerUi.setup(swagger,{explorer:true}))
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swagger, { explorer: true }));
 
-app.get('/', (req, res, next) => {
-    res.send('OSORI_SERVER')
+app.get('/', (req, res) => {
+  res.send('OSORI_SERVER');
 });
 
 app.use(UserRouter);
-app.use('/article', ArticleRouter);
+app.use(ArticleRouter);
 
 app.listen(port, async () => {
-    console.log('SERVER_STARTED',port)
-})
+  console.log('SERVER_STARTED', port);
+});

@@ -1,10 +1,14 @@
 #User
 /users:
   $ref : './users.yaml#/users'
+/user:
+  $ref : './users.yaml#/user'
 /user/{userId}:
   $ref : './users.yaml#/user-id'
 #Article
 /articles:
   $ref : './articles.yaml#/articles'
+/article:
+  $ref : './articles.yaml#/article'
 /article/{articleId}:
   $ref : './articles.yaml#/article-id'

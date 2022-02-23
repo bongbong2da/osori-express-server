@@ -3,8 +3,43 @@ users:
     tags:
       - User
     responses:
-      '200':
+      200:
         description: OK
+      400:
+        description: BAD_REQUEST
+      401:
+        description: FAILED_TO_ATHORIZE
+      404:
+        description: NOT_FOUND
+      500:
+        description: SERVER_ERROR
+user:
+  post:
+    requestBody:
+      description: Body
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              nickname:
+                type: string
+              loginType:
+                type: string
+    tags:
+      - User
+    responses:
+      200:
+        description: OK
+      400:
+        description: BAD_REQUEST
+      401:
+        description: FAILED_TO_ATHORIZE
+      404:
+        description: NOT_FOUND
+      500:
+        description: SERVER_ERROR
 user-id:
   get:
     parameters:
@@ -17,21 +52,49 @@ user-id:
     tags:
       - User
     responses:
-      '200':
+      200:
         description: OK
-  post:
-    tags:
-      - User
-    responses:
-      '200':
+      400:
+        description: BAD_REQUEST
+      401:
+        description: FAILED_TO_ATHORIZE
+      404:
+        description: NOT_FOUND
+      500:
+        description: SERVER_ERROR
   update:
     tags:
       - User
     parameter:
     responses:
-      '200':
+      200:
+        description: OK
+      400:
+        description: BAD_REQUEST
+      401:
+        description: FAILED_TO_ATHORIZE
+      404:
+        description: NOT_FOUND
+      500:
+        description: SERVER_ERROR
   delete:
+    parameters:
+      - in: path
+        name: userId
+        schema:
+          type: number
+        required: true
+        description: 삭제할 유저의 ID
     tags:
       - User
     responses:
-      '200':
+      200:
+        description: OK
+      400:
+        description: BAD_REQUEST
+      401:
+        description: FAILED_TO_ATHORIZE
+      404:
+        description: NOT_FOUND
+      500:
+        description: SERVER_ERROR
