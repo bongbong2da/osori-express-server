@@ -15,7 +15,7 @@ UserRouter.get('/user/:userId', async (req, res) => {
 
   if (parameters.loginType) {
     if (!isUndefined(userId)) {
-      await User.findOne({ where: { id: userId as string, loginType: parameters.loginType as string } }).then((result) => {
+      await User.findOne({ where: { externalId: userId as string, loginType: parameters.loginType as string } }).then((result) => {
         if (result !== null) {
           res.status(200);
           res.send(result);
