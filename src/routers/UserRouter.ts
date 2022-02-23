@@ -11,7 +11,26 @@ const User = sequelize.user;
  */
 UserRouter.get('/user/:userId', async (req, res) => {
   const { userId } = req.params;
-  if (!isUndefined(userId)) {
+  const parameters = req.query;
+
+  if (parameters.loginType) {
+    if (!isUndefined(userId)) {
+      await User.findOne({ where: { id: userId as string, loginType: parameters.loginType as string } }).then((result) => {
+        if (result !== null) {
+          res.status(200);
+          res.send(result);
+        } else {
+          res.send('USER_NOT_FOUND');
+        }
+      }).catch((e) => {
+        console.log(e);
+        res.send('SERVER_ERROR');
+      });
+    } else {
+      res.status(400);
+      res.send('BAD_REQUEST');
+    }
+  } else if (!isUndefined(userId)) {
     await User.findOne({ where: { id: userId } }).then((result) => {
       if (result !== null) {
         res.status(200);
