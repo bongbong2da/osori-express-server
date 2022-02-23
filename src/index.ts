@@ -27,7 +27,7 @@ app.use(express.json());
 const swaggerDefinitions : SwaggerDefinition = {
   swagger: '2.0',
   host: 'orosri.team-penthouse.com',
-  // schemes : ["https"],
+  schemes: ['https'],
   info: {
     title: 'Osori Server',
     version: '1.0.0',
