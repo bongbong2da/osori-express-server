@@ -1,7 +1,7 @@
 type: object
 required:
   - nickname
-  - login_type
+  - loginType
 properties:
   id:
     type: number

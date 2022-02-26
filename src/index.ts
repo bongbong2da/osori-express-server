@@ -40,7 +40,10 @@ const swagger = swaggerJSDoc({
   apis: ['build/swagger.yaml'],
 });
 
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swagger, { explorer: true }));
+const jsonSchema = require('../build/swagger.json');
+
+app.get('/api-docs/swagger.json', (req, res) => res.json(jsonSchema));
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swagger, { swaggerUrl: '/api-docs/swagger.json' }));
 
 app.get('/', (req, res) => {
   res.send('OSORI_SERVER');
