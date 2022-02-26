@@ -27,6 +27,8 @@ properties:
   birthday:
     type: string
   createDate:
-    type: Date
+    type: string
+    format : date
   modifyDate:
-    type: Date
+    type: string
+    format : date
