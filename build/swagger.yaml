@@ -212,7 +212,7 @@ definitions:
     type: object
     required:
       - nickname
-      - login_type
+      - loginType
     properties:
       id:
         type: number
@@ -242,9 +242,11 @@ definitions:
       birthday:
         type: string
       createDate:
-        type: Date
+        type: string
+        format: date
       modifyDate:
-        type: Date
+        type: string
+        format: date
   ArticleDto:
     type: object
     required:
@@ -271,6 +273,8 @@ definitions:
       isPublished:
         type: boolean
       createDate:
-        type: Date
+        type: string
+        format: date
       modifyDate:
-        type: Date
+        type: string
+        format: date
