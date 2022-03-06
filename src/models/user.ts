@@ -5,13 +5,13 @@ import type { article, articleCreationAttributes, articleId } from './article';
 export interface userAttributes {
   id: number;
   loginType: 'NONE' | 'KAKAO' | 'GOOGLE' | 'APPLE';
-  externalId?: number;
+  externalId?: string;
   nickname: string;
   gender?: string;
   email?: string;
   name?: string;
   phoneNumber?: string;
-  profileImg?: string;
+  profileImage?: string;
   ageRange?: string;
   birthday?: string;
   createDate: string;
@@ -21,19 +21,19 @@ export interface userAttributes {
 
 export type userPk = "id";
 export type userId = user[userPk];
-export type userOptionalAttributes = "id" | "loginType" | "externalId" | "gender" | "email" | "name" | "phoneNumber" | "profileImg" | "ageRange" | "birthday" | "createDate" | "loginDate" | "modifyDate";
+export type userOptionalAttributes = "id" | "loginType" | "externalId" | "gender" | "email" | "name" | "phoneNumber" | "profileImage" | "ageRange" | "birthday" | "createDate" | "loginDate" | "modifyDate";
 export type userCreationAttributes = Optional<userAttributes, userOptionalAttributes>;
 
 export class user extends Model<userAttributes, userCreationAttributes> implements userAttributes {
   id!: number;
   loginType!: 'NONE' | 'KAKAO' | 'GOOGLE' | 'APPLE';
-  externalId?: number;
+  externalId?: string;
   nickname!: string;
   gender?: string;
   email?: string;
   name?: string;
   phoneNumber?: string;
-  profileImg?: string;
+  profileImage?: string;
   ageRange?: string;
   birthday?: string;
   createDate!: string;
@@ -61,7 +61,7 @@ export class user extends Model<userAttributes, userCreationAttributes> implemen
       field: 'login_type'
     },
     externalId: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.TEXT,
       allowNull: true,
       field: 'external_id'
     },
@@ -86,10 +86,10 @@ export class user extends Model<userAttributes, userCreationAttributes> implemen
       allowNull: true,
       field: 'phone_number'
     },
-    profileImg: {
+    profileImage: {
       type: DataTypes.TEXT,
       allowNull: true,
-      field: 'profile_img'
+      field: 'profile_image'
     },
     ageRange: {
       type: DataTypes.TEXT,
