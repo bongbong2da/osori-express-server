@@ -236,7 +236,7 @@ definitions:
       phoneNumber:
         type: string
       profileImg:
-        type: number
+        type: string
       ageRange:
         type: string
       birthday:
