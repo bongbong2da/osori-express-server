@@ -9,7 +9,7 @@ properties:
     type: string
     enum : ['NONE', 'KAKAO', 'GOOGLE', 'APPLE']
   externalId:
-    type: number
+    type: string
   nickname:
     type: string
   gender:
@@ -20,7 +20,7 @@ properties:
     type: string
   phoneNumber:
     type: string
-  profileImg:
+  profileImage:
     type: string
   ageRange:
     type: string
