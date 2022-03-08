@@ -31,7 +31,13 @@ ArticleRouter.get('/article/:articleId', (req, res) => {
  * @getArticles
  */
 ArticleRouter.get('/articles', (req, res) => {
-  Article.findAll().then((result) => {
+  let filter = {};
+  const { creatorId } = req.query;
+  if (typeof creatorId !== 'undefined') {
+    filter = { where: { creatorId } };
+  }
+
+  Article.findAll(filter).then((result) => {
     if (result !== null) {
       res.send(result);
     } else {
