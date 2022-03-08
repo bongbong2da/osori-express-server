@@ -52,6 +52,12 @@ app.get('/', (req, res) => {
 app.use(UserRouter);
 app.use(ArticleRouter);
 
+app.post('/clova/callback', (req, res) => {
+  if (req.statusCode === 200) {
+    res.send(req.body);
+  }
+});
+
 app.listen(port, async () => {
   console.log('SERVER_STARTED', port);
 });
