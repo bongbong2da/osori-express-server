@@ -5,6 +5,8 @@
   $ref : './users.yaml#/user'
 /user/{userId}:
   $ref : './users.yaml#/user-id'
+/user/login:
+  $ref : './users.yaml#/login'
 #Article
 /articles:
   $ref : './articles.yaml#/articles'

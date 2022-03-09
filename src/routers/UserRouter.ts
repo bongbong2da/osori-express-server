@@ -1,10 +1,12 @@
 import express from 'express';
 import { isUndefined } from 'lodash';
+import jwt from 'jsonwebtoken';
 import sequelize from '../models';
 import { user } from '../models/user';
 
 const UserRouter = express.Router();
 const User = sequelize.user;
+const Token = sequelize.token;
 
 /**
  * @getUser
@@ -116,6 +118,66 @@ UserRouter.delete('/user/:userId', (req, res) => {
     res.status(500);
     res.send(e);
   });
+});
+
+UserRouter.post('/user/login', async (req, res) => {
+  const creatingUser = req.body as user;
+  const { loginType } = creatingUser;
+
+  console.log('loginType', loginType);
+  const findOptions = loginType !== 'NONE' ? { where: { externalId: creatingUser.externalId } } : { where: { id: creatingUser.id } };
+  console.log('option', findOptions);
+
+  const user = await User.findOne(findOptions).then(async (result) => {
+    if (result === null) {
+      await User.create(creatingUser).then(async (newUser) => {
+        const accessToken = jwt.sign({ user: newUser.get() }, process.env.JWT_SECRET_KEY!, { algorithm: 'HS256', expiresIn: '7d' });
+        const refreshToken = jwt.sign({ accessToken }, process.env.JWT_SECRET_KEY!, { algorithm: 'HS256', expiresIn: '30d' });
+
+        await Token.create({ userId: newUser.id, accessToken, refreshToken }).then((result) => {
+          if (result !== null) {
+            res.send({ accessToken, refreshToken });
+          } else {
+            res.status(500);
+            res.send('FAILED_TO_SAVE_TOKENS');
+          }
+        });
+      }).catch((e) => {
+        console.log(e);
+        res.status(500);
+        res.send('FAILED_TO_CREATE_USER');
+      });
+    }
+    return result;
+  });
+
+  if (user !== null) {
+    await Token.findOne({ where: { userId: user.id } }).then(async (token) => {
+      const accessToken = jwt.sign({ user: user.get() }, process.env.JWT_SECRET_KEY!, { algorithm: 'HS256', expiresIn: '7d' });
+      const refreshToken = jwt.sign({ accessToken }, process.env.JWT_SECRET_KEY!, { algorithm: 'HS256', expiresIn: '30d' });
+
+      if (token === null) {
+        await Token.create({ userId: user.id, accessToken, refreshToken }).then((result) => {
+          if (result !== null) {
+            res.send({ accessToken, refreshToken });
+          } else {
+            res.status(500);
+            res.send('FAILED_TO_SAVE_TOKENS');
+          }
+        });
+      } else {
+        await Token.update({ accessToken, refreshToken }, { where: { userId: user.id }, returning: true }).then((result) => {
+          console.log(result);
+          if (result !== null) {
+            res.send({ accessToken, refreshToken });
+          }
+        });
+      }
+    });
+  } else {
+    res.status(400);
+    res.send('FAILED_TO_LOGIN');
+  }
 });
 
 export default UserRouter;

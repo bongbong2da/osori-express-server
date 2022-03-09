@@ -20,5 +20,6 @@ module.exports = {
       'off',
     ],
     'import/no-unresolved': 'off',
+    'no-shadow': 'off',
   },
 };

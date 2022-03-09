@@ -98,3 +98,30 @@ user-id:
         description: NOT_FOUND
       500:
         description: SERVER_ERROR
+login:
+  post:
+    requestBody:
+      description: 로그인 타입이 None일 경우 id가 제공되어야 하고, 그 외에는 externalId가 제공되어야 합니다.
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              nickname:
+                type: string
+              loginType:
+                type: string
+    tags:
+      - User
+    responses:
+      200:
+        description: OK
+      400:
+        description: BAD_REQUEST
+      401:
+        description: FAILED_TO_ATHORIZE
+      404:
+        description: NOT_FOUND
+      500:
+        description: SERVER_ERROR
