@@ -1,6 +1,7 @@
 import * as Sequelize from 'sequelize';
 import { DataTypes, Model, Optional } from 'sequelize';
-import type { article, articleCreationAttributes, articleId } from './article';
+import type { article, articleId } from './article';
+import type { token, tokenId } from './token';
 
 export interface userAttributes {
   id: number;
@@ -40,11 +41,30 @@ export class user extends Model<userAttributes, userCreationAttributes> implemen
   loginDate?: string;
   modifyDate?: string;
 
-  // user hasOne article via id
-  article!: article;
-  getArticle!: Sequelize.HasOneGetAssociationMixin<article>;
-  setArticle!: Sequelize.HasOneSetAssociationMixin<article, articleId>;
-  createArticle!: Sequelize.HasOneCreateAssociationMixin<article>;
+  // user hasMany article via creatorId
+  articles!: article[];
+  getArticles!: Sequelize.HasManyGetAssociationsMixin<article>;
+  setArticles!: Sequelize.HasManySetAssociationsMixin<article, articleId>;
+  addArticle!: Sequelize.HasManyAddAssociationMixin<article, articleId>;
+  addArticles!: Sequelize.HasManyAddAssociationsMixin<article, articleId>;
+  createArticle!: Sequelize.HasManyCreateAssociationMixin<article>;
+  removeArticle!: Sequelize.HasManyRemoveAssociationMixin<article, articleId>;
+  removeArticles!: Sequelize.HasManyRemoveAssociationsMixin<article, articleId>;
+  hasArticle!: Sequelize.HasManyHasAssociationMixin<article, articleId>;
+  hasArticles!: Sequelize.HasManyHasAssociationsMixin<article, articleId>;
+  countArticles!: Sequelize.HasManyCountAssociationsMixin;
+  // user hasMany token via userId
+  tokens!: token[];
+  getTokens!: Sequelize.HasManyGetAssociationsMixin<token>;
+  setTokens!: Sequelize.HasManySetAssociationsMixin<token, tokenId>;
+  addToken!: Sequelize.HasManyAddAssociationMixin<token, tokenId>;
+  addTokens!: Sequelize.HasManyAddAssociationsMixin<token, tokenId>;
+  createToken!: Sequelize.HasManyCreateAssociationMixin<token>;
+  removeToken!: Sequelize.HasManyRemoveAssociationMixin<token, tokenId>;
+  removeTokens!: Sequelize.HasManyRemoveAssociationsMixin<token, tokenId>;
+  hasToken!: Sequelize.HasManyHasAssociationMixin<token, tokenId>;
+  hasTokens!: Sequelize.HasManyHasAssociationsMixin<token, tokenId>;
+  countTokens!: Sequelize.HasManyCountAssociationsMixin;
 
   static initModel(sequelize: Sequelize.Sequelize): typeof user {
     return user.init({

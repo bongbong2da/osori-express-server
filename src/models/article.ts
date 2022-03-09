@@ -34,11 +34,11 @@ export class article extends Model<articleAttributes, articleCreationAttributes>
   createDate!: string;
   modifyDate?: string;
 
-  // article belongsTo user via id
-  idUser!: user;
-  getIdUser!: Sequelize.BelongsToGetAssociationMixin<user>;
-  setIdUser!: Sequelize.BelongsToSetAssociationMixin<user, userId>;
-  createIdUser!: Sequelize.BelongsToCreateAssociationMixin<user>;
+  // article belongsTo user via creatorId
+  creator!: user;
+  getCreator!: Sequelize.BelongsToGetAssociationMixin<user>;
+  setCreator!: Sequelize.BelongsToSetAssociationMixin<user, userId>;
+  createCreator!: Sequelize.BelongsToCreateAssociationMixin<user>;
 
   static initModel(sequelize: Sequelize.Sequelize): typeof article {
     return article.init({
@@ -46,15 +46,15 @@ export class article extends Model<articleAttributes, articleCreationAttributes>
       autoIncrement: true,
       type: DataTypes.INTEGER,
       allowNull: false,
-      primaryKey: true,
-      references: {
-        model: 'user',
-        key: 'id'
-      }
+      primaryKey: true
     },
     creatorId: {
       type: DataTypes.INTEGER,
       allowNull: false,
+      references: {
+        model: 'user',
+        key: 'id'
+      },
       field: 'creator_id'
     },
     categoryId: {
@@ -114,6 +114,13 @@ export class article extends Model<articleAttributes, articleCreationAttributes>
         using: "BTREE",
         fields: [
           { name: "id" },
+        ]
+      },
+      {
+        name: "article_FK",
+        using: "BTREE",
+        fields: [
+          { name: "creator_id" },
         ]
       },
     ]
