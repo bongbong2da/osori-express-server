@@ -92,7 +92,7 @@ const swaggerDefinitions : SwaggerDefinition = {
 
 const swagger = swaggerJSDoc({
   swaggerDefinition: swaggerDefinitions,
-  apis: ['build/swagger.json'],
+  apis: ['build/swagger.yaml'],
 });
 
 const jsonSchema = require('../build/swagger.json');
