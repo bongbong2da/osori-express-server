@@ -4,6 +4,7 @@ import jwt, { JwtPayload } from 'jsonwebtoken';
 import swaggerJSDoc, { SwaggerDefinition } from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
 import cors from 'cors';
+import ScrapRouter from './routers/ScrapRouter';
 import FollowRouter from './routers/FollowRouter';
 import sequelize from './models';
 import ArticleRouter from './routers/ArticleRouter';
@@ -91,7 +92,7 @@ const swaggerDefinitions : SwaggerDefinition = {
 
 const swagger = swaggerJSDoc({
   swaggerDefinition: swaggerDefinitions,
-  apis: ['build/swagger.yaml'],
+  apis: ['build/swagger.json'],
 });
 
 const jsonSchema = require('../build/swagger.json');
@@ -106,6 +107,7 @@ app.get('/', (req, res) => {
 app.use(UserRouter);
 app.use(ArticleRouter);
 app.use(FollowRouter);
+app.use(ScrapRouter);
 
 app.post('/clova/callback', (req, res) => {
   if (req.statusCode === 200) {
