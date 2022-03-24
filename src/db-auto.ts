@@ -8,7 +8,7 @@ const auto = new SequelizeAuto(
   {
     directory: 'src/models',
     singularize: true,
-    useDefine: false,
+    useDefine: true,
     host: config.development.host,
     port: 3306,
     dialect: 'mariadb',

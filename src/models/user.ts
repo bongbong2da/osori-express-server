@@ -1,6 +1,8 @@
 import * as Sequelize from 'sequelize';
 import { DataTypes, Model, Optional } from 'sequelize';
 import type { article, articleId } from './article';
+import type { follow, followId } from './follow';
+import type { scrap, scrapId } from './scrap';
 import type { token, tokenId } from './token';
 
 export interface userAttributes {
@@ -53,6 +55,42 @@ export class user extends Model<userAttributes, userCreationAttributes> implemen
   hasArticle!: Sequelize.HasManyHasAssociationMixin<article, articleId>;
   hasArticles!: Sequelize.HasManyHasAssociationsMixin<article, articleId>;
   countArticles!: Sequelize.HasManyCountAssociationsMixin;
+  // user hasMany follow via follower
+  follows!: follow[];
+  getFollows!: Sequelize.HasManyGetAssociationsMixin<follow>;
+  setFollows!: Sequelize.HasManySetAssociationsMixin<follow, followId>;
+  addFollow!: Sequelize.HasManyAddAssociationMixin<follow, followId>;
+  addFollows!: Sequelize.HasManyAddAssociationsMixin<follow, followId>;
+  createFollow!: Sequelize.HasManyCreateAssociationMixin<follow>;
+  removeFollow!: Sequelize.HasManyRemoveAssociationMixin<follow, followId>;
+  removeFollows!: Sequelize.HasManyRemoveAssociationsMixin<follow, followId>;
+  hasFollow!: Sequelize.HasManyHasAssociationMixin<follow, followId>;
+  hasFollows!: Sequelize.HasManyHasAssociationsMixin<follow, followId>;
+  countFollows!: Sequelize.HasManyCountAssociationsMixin;
+  // user hasMany follow via followee
+  followeeFollows!: follow[];
+  getFolloweeFollows!: Sequelize.HasManyGetAssociationsMixin<follow>;
+  setFolloweeFollows!: Sequelize.HasManySetAssociationsMixin<follow, followId>;
+  addFolloweeFollow!: Sequelize.HasManyAddAssociationMixin<follow, followId>;
+  addFolloweeFollows!: Sequelize.HasManyAddAssociationsMixin<follow, followId>;
+  createFolloweeFollow!: Sequelize.HasManyCreateAssociationMixin<follow>;
+  removeFolloweeFollow!: Sequelize.HasManyRemoveAssociationMixin<follow, followId>;
+  removeFolloweeFollows!: Sequelize.HasManyRemoveAssociationsMixin<follow, followId>;
+  hasFolloweeFollow!: Sequelize.HasManyHasAssociationMixin<follow, followId>;
+  hasFolloweeFollows!: Sequelize.HasManyHasAssociationsMixin<follow, followId>;
+  countFolloweeFollows!: Sequelize.HasManyCountAssociationsMixin;
+  // user hasMany scrap via userId
+  scraps!: scrap[];
+  getScraps!: Sequelize.HasManyGetAssociationsMixin<scrap>;
+  setScraps!: Sequelize.HasManySetAssociationsMixin<scrap, scrapId>;
+  addScrap!: Sequelize.HasManyAddAssociationMixin<scrap, scrapId>;
+  addScraps!: Sequelize.HasManyAddAssociationsMixin<scrap, scrapId>;
+  createScrap!: Sequelize.HasManyCreateAssociationMixin<scrap>;
+  removeScrap!: Sequelize.HasManyRemoveAssociationMixin<scrap, scrapId>;
+  removeScraps!: Sequelize.HasManyRemoveAssociationsMixin<scrap, scrapId>;
+  hasScrap!: Sequelize.HasManyHasAssociationMixin<scrap, scrapId>;
+  hasScraps!: Sequelize.HasManyHasAssociationsMixin<scrap, scrapId>;
+  countScraps!: Sequelize.HasManyCountAssociationsMixin;
   // user hasMany token via userId
   tokens!: token[];
   getTokens!: Sequelize.HasManyGetAssociationsMixin<token>;
@@ -67,7 +105,7 @@ export class user extends Model<userAttributes, userCreationAttributes> implemen
   countTokens!: Sequelize.HasManyCountAssociationsMixin;
 
   static initModel(sequelize: Sequelize.Sequelize): typeof user {
-    return user.init({
+    return sequelize.define('user', {
     id: {
       autoIncrement: true,
       type: DataTypes.INTEGER,
@@ -123,7 +161,7 @@ export class user extends Model<userAttributes, userCreationAttributes> implemen
     createDate: {
       type: DataTypes.DATEONLY,
       allowNull: false,
-      defaultValue: Sequelize.Sequelize.fn('current_timestamp'),
+      defaultValue: Sequelize.Sequelize.fn('user'),
       field: 'create_date'
     },
     loginDate: {
@@ -137,7 +175,6 @@ export class user extends Model<userAttributes, userCreationAttributes> implemen
       field: 'modify_date'
     }
   }, {
-    sequelize,
     tableName: 'user',
     timestamps: false,
     indexes: [
@@ -150,6 +187,6 @@ export class user extends Model<userAttributes, userCreationAttributes> implemen
         ]
       },
     ]
-  });
+  }) as typeof user;
   }
 }

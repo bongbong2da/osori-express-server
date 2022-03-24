@@ -27,7 +27,7 @@ export class token extends Model<tokenAttributes, tokenCreationAttributes> imple
   createUser!: Sequelize.BelongsToCreateAssociationMixin<user>;
 
   static initModel(sequelize: Sequelize.Sequelize): typeof token {
-    return token.init({
+    return sequelize.define('token', {
     id: {
       autoIncrement: true,
       type: DataTypes.INTEGER,
@@ -54,7 +54,6 @@ export class token extends Model<tokenAttributes, tokenCreationAttributes> imple
       field: 'refresh_token'
     }
   }, {
-    sequelize,
     tableName: 'token',
     timestamps: false,
     indexes: [
@@ -74,6 +73,6 @@ export class token extends Model<tokenAttributes, tokenCreationAttributes> imple
         ]
       },
     ]
-  });
+  }) as typeof token;
   }
 }

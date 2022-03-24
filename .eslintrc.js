@@ -21,5 +21,6 @@ module.exports = {
     ],
     'import/no-unresolved': 'off',
     'no-shadow': 'off',
+    'no-throw-literal': 'off',
   },
 };

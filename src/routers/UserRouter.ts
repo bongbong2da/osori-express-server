@@ -1,6 +1,7 @@
 import express from 'express';
 import { isUndefined } from 'lodash';
 import jwt from 'jsonwebtoken';
+import { trimNull } from '../utils/objectUtil';
 import sequelize from '../models';
 import { user } from '../models/user';
 
@@ -20,7 +21,7 @@ UserRouter.get('/user/:userId', async (req, res) => {
       await User.findOne({ where: { externalId: userId as string, loginType: parameters.loginType as string } }).then((result) => {
         if (result !== null) {
           res.status(200);
-          res.send(result);
+          res.send(trimNull(result.get()));
         } else {
           res.send('USER_NOT_FOUND');
         }
@@ -36,7 +37,7 @@ UserRouter.get('/user/:userId', async (req, res) => {
     await User.findOne({ where: { id: userId } }).then((result) => {
       if (result !== null) {
         res.status(200);
-        res.send(result);
+        res.send(trimNull(result.get()));
       } else {
         res.send('USER_NOT_FOUND');
       }
@@ -74,7 +75,7 @@ UserRouter.post('/user', (req, res) => {
   console.log('creating', creatingUser);
   User.create(creatingUser).then((result) => {
     console.log('success');
-    res.send(result);
+    res.send(trimNull(result.get()));
   }).catch((e) => {
     console.log(e);
     console.log('failed');
@@ -122,6 +123,7 @@ UserRouter.delete('/user/:userId', (req, res) => {
 
 UserRouter.post('/user/login', async (req, res) => {
   const creatingUser = req.body as user;
+  creatingUser.loginDate = new Date().toString();
   const { loginType } = creatingUser;
 
   console.log('loginType', loginType);
@@ -129,7 +131,7 @@ UserRouter.post('/user/login', async (req, res) => {
   console.log('option', findOptions);
 
   const user = await User.findOne(findOptions).then(async (result) => {
-    if (result === null) {
+    if (!result) {
       await User.create(creatingUser).then(async (newUser) => {
         const accessToken = jwt.sign({ user: newUser.get() }, process.env.JWT_SECRET_KEY!, { algorithm: 'HS256', expiresIn: '7d' });
         const refreshToken = jwt.sign({ accessToken }, process.env.JWT_SECRET_KEY!, { algorithm: 'HS256', expiresIn: '30d' });
@@ -151,7 +153,7 @@ UserRouter.post('/user/login', async (req, res) => {
     return result;
   });
 
-  if (user !== null) {
+  if (user) {
     await Token.findOne({ where: { userId: user.id } }).then(async (token) => {
       const accessToken = jwt.sign({ user: user.get() }, process.env.JWT_SECRET_KEY!, { algorithm: 'HS256', expiresIn: '7d' });
       const refreshToken = jwt.sign({ accessToken }, process.env.JWT_SECRET_KEY!, { algorithm: 'HS256', expiresIn: '30d' });

@@ -1,5 +1,6 @@
 import * as Sequelize from 'sequelize';
 import { DataTypes, Model, Optional } from 'sequelize';
+import type { scrap, scrapId } from './scrap';
 import type { user, userId } from './user';
 
 export interface articleAttributes {
@@ -34,6 +35,18 @@ export class article extends Model<articleAttributes, articleCreationAttributes>
   createDate!: string;
   modifyDate?: string;
 
+  // article hasMany scrap via articleId
+  scraps!: scrap[];
+  getScraps!: Sequelize.HasManyGetAssociationsMixin<scrap>;
+  setScraps!: Sequelize.HasManySetAssociationsMixin<scrap, scrapId>;
+  addScrap!: Sequelize.HasManyAddAssociationMixin<scrap, scrapId>;
+  addScraps!: Sequelize.HasManyAddAssociationsMixin<scrap, scrapId>;
+  createScrap!: Sequelize.HasManyCreateAssociationMixin<scrap>;
+  removeScrap!: Sequelize.HasManyRemoveAssociationMixin<scrap, scrapId>;
+  removeScraps!: Sequelize.HasManyRemoveAssociationsMixin<scrap, scrapId>;
+  hasScrap!: Sequelize.HasManyHasAssociationMixin<scrap, scrapId>;
+  hasScraps!: Sequelize.HasManyHasAssociationsMixin<scrap, scrapId>;
+  countScraps!: Sequelize.HasManyCountAssociationsMixin;
   // article belongsTo user via creatorId
   creator!: user;
   getCreator!: Sequelize.BelongsToGetAssociationMixin<user>;
@@ -41,7 +54,7 @@ export class article extends Model<articleAttributes, articleCreationAttributes>
   createCreator!: Sequelize.BelongsToCreateAssociationMixin<user>;
 
   static initModel(sequelize: Sequelize.Sequelize): typeof article {
-    return article.init({
+    return sequelize.define('article', {
     id: {
       autoIncrement: true,
       type: DataTypes.INTEGER,
@@ -95,7 +108,7 @@ export class article extends Model<articleAttributes, articleCreationAttributes>
     createDate: {
       type: DataTypes.DATEONLY,
       allowNull: false,
-      defaultValue: Sequelize.Sequelize.fn('current_timestamp'),
+      defaultValue: Sequelize.Sequelize.fn('sysdate'),
       field: 'create_date'
     },
     modifyDate: {
@@ -104,7 +117,6 @@ export class article extends Model<articleAttributes, articleCreationAttributes>
       field: 'modify_date'
     }
   }, {
-    sequelize,
     tableName: 'article',
     timestamps: false,
     indexes: [
@@ -124,6 +136,6 @@ export class article extends Model<articleAttributes, articleCreationAttributes>
         ]
       },
     ]
-  });
+  }) as typeof article;
   }
 }
