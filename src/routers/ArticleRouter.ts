@@ -46,7 +46,7 @@ ArticleRouter.get('/article/:articleId', (req, res) => {
 ArticleRouter.get('/articles', async (req, res) => {
   const { filter, offset } = makeFilter(req.query);
 
-  await Article.findAndCountAll({ offset, limit: filter.size })
+  await Article.findAndCountAll({ offset, limit: filter.size, order: [['id', 'DESC']] })
     .then(async (result) => {
       const { count, rows } = result;
       if (rows) {
@@ -87,7 +87,7 @@ ArticleRouter.get('/articles/:creatorId', async (req, res) => {
 
   const user = await User.findOne({ where: { id: creatorId } });
   if (user) {
-    await Article.findAndCountAll({ offset, limit: filter.size }).then(async (result) => {
+    await Article.findAndCountAll({ offset, limit: filter.size, order: [['id', 'DESC']] }).then(async (result) => {
       const { count, rows } = result;
       const pagination = makePagination(filter, rows.length, count);
 

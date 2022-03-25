@@ -2,7 +2,6 @@ import express from 'express';
 import jwt from 'jsonwebtoken';
 import { isUndefined } from 'lodash';
 import { Op } from 'sequelize';
-import { PaginationInterface, SearchInterface } from '../types/CommonTypes';
 import sequelize from '../models';
 import { user } from '../models/user';
 import { makeFilter, makePagination, trimNull } from '../utils/objectUtil';
@@ -64,6 +63,7 @@ UserRouter.get('/users', async (req, res) => {
     where: {
       nickname: { [Op.substring]: filter.searchKeyword },
     },
+    order: [['id', 'DESC']],
   }).then((result) => {
     const { rows, count } = result;
     if (result.rows !== null) {
