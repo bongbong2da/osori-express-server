@@ -1,6 +1,6 @@
 import express from 'express';
 import { isUndefined } from 'lodash';
-import { trimNull } from '../utils/objectUtil';
+import { makeFilter, makePagination, trimNull } from '../utils/objectUtil';
 import { ArticleDto } from '../payloads/payloads';
 import sequelize from '../models';
 import { user } from '../models/user';
@@ -41,40 +41,82 @@ ArticleRouter.get('/article/:articleId', (req, res) => {
 });
 
 /**
- * @getArticles
+ * @getArticlesByUserId
  */
 ArticleRouter.get('/articles', async (req, res) => {
-  let filter = {};
-  const { creatorId } = req.query;
-  if (typeof creatorId !== 'undefined') {
-    filter = { where: { creatorId } };
-  }
+  const { filter, offset } = makeFilter(req.query);
 
-  const articles = await Article.findAll(filter).catch((e) => {
-    console.log(e);
-    res.send('SERVER_ERROR');
-  });
+  await Article.findAndCountAll({ offset, limit: filter.size, order: [['id', 'DESC']] })
+    .then(async (result) => {
+      const { count, rows } = result;
+      if (rows) {
+        const payloads = await Promise.all(rows.map(async (article) => {
+          const creator = await article.getCreator().catch((e) => {
+            res.status(500);
+            res.send(e);
+          });
 
-  if (articles) {
-    const payloads = await Promise.all(articles.map(async (article) => {
-      const creator = await article.getCreator().catch((e) => {
-        res.status(500);
-        res.send(e);
-      });
-
-      if (creator) {
-        const payload = {
-          ...trimNull(article.get()),
-          creator: trimNull(creator.get()),
-        };
-        delete payload.creatorId;
-        return payload;
+          if (creator) {
+            const payload = {
+              ...trimNull(article.get()),
+              creator: trimNull(creator.get()),
+            };
+            delete payload.creatorId;
+            return payload;
+          }
+          return article;
+        }));
+        const pagination = makePagination(filter, rows.length, count);
+        res.setHeader('X-Pagination', pagination);
+        res.send(payloads);
+      } else {
+        res.send([]);
       }
-      return article;
-    }));
-    res.send(payloads);
+    })
+    .catch((e) => {
+      res.send('SERVER_ERROR');
+    });
+});
+
+/**
+ * @getArticlesByUserId
+ */
+ArticleRouter.get('/articles/:creatorId', async (req, res) => {
+  const { filter, offset } = makeFilter(req.query);
+  const creatorId = Number(req.params.creatorId);
+
+  const user = await User.findOne({ where: { id: creatorId } });
+  if (user) {
+    await Article.findAndCountAll({ offset, limit: filter.size, order: [['id', 'DESC']] }).then(async (result) => {
+      const { count, rows } = result;
+      const pagination = makePagination(filter, rows.length, count);
+
+      if (rows) {
+        const payloads = await Promise.all(rows.map(async (article) => {
+          const creator = await article.getCreator().catch((e) => {
+            res.status(500);
+            res.send(e);
+          });
+
+          if (creator) {
+            const payload = {
+              ...trimNull(article.get()),
+              creator: trimNull(creator.get()),
+            };
+            delete payload.creatorId;
+            return payload;
+          }
+          return article;
+        }));
+        res.setHeader('X-Pagination', pagination);
+        res.send(payloads);
+      } else {
+        res.send([]);
+      }
+    });
   } else {
-    res.send([]);
+    res.status(400);
+    res.send('사용자를 찾을 수 없습니다.');
   }
 });
 

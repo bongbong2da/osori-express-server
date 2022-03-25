@@ -1,9 +1,10 @@
 import express from 'express';
-import { isUndefined } from 'lodash';
 import jwt from 'jsonwebtoken';
-import { trimNull } from '../utils/objectUtil';
+import { isUndefined } from 'lodash';
+import { Op } from 'sequelize';
 import sequelize from '../models';
 import { user } from '../models/user';
+import { makeFilter, makePagination, trimNull } from '../utils/objectUtil';
 
 const UserRouter = express.Router();
 const User = sequelize.user;
@@ -55,9 +56,21 @@ UserRouter.get('/user/:userId', async (req, res) => {
  * @getUsers
  */
 UserRouter.get('/users', async (req, res) => {
-  await User.findAll().then((result) => {
-    if (result !== null) {
-      res.send(result);
+  const { filter, offset } = makeFilter(req.query);
+  await User.findAndCountAll({
+    offset,
+    limit: filter.size,
+    where: {
+      nickname: { [Op.substring]: filter.searchKeyword },
+    },
+    order: [['id', 'DESC']],
+  }).then((result) => {
+    const { rows, count } = result;
+    if (result.rows !== null) {
+      const payload = rows.map((user) => trimNull(user.get()));
+      const pagination = makePagination(filter, rows.length, count);
+      res.setHeader('X-Pagination', pagination);
+      res.send(payload);
     } else {
       res.send('USERS_NOT_FOUND');
     }
