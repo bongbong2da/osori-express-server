@@ -10,13 +10,7 @@ import type { tokenAttributes, tokenCreationAttributes } from './token';
 import { user as _user } from './user';
 import type { userAttributes, userCreationAttributes } from './user';
 
-export {
-  _article as article,
-  _follow as follow,
-  _scrap as scrap,
-  _token as token,
-  _user as user,
-};
+export { _article as article, _follow as follow, _scrap as scrap, _token as token, _user as user };
 
 export type {
   articleAttributes,

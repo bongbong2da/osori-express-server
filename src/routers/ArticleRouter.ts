@@ -4,9 +4,7 @@ import sequelize from '../models';
 import { article } from '../models/article';
 import { user } from '../models/user';
 import { ArticleDto } from '../payloads/payloads';
-import {
-  getCaller, makeFilter, makePagination, trimNull,
-} from '../utils/objectUtil';
+import { getCaller, makeFilter, makePagination, trimNull } from '../utils/objectUtil';
 
 const ArticleRouter = express.Router();
 const Article = sequelize.article;
@@ -22,40 +20,42 @@ ArticleRouter.get('/article/:articleId', (req, res) => {
 
   const { articleId } = req.params;
   if (!isUndefined(articleId)) {
-    Article.findOne({ where: { id: articleId } }).then(async (article) => {
-      if (article) {
-        const creator = await User.findOne({ where: { id: article.creatorId } });
-        if (creator) {
-          const followerCount = await Follow.count({ where: { followee: creator.id } });
+    Article.findOne({ where: { id: articleId } })
+      .then(async (article) => {
+        if (article) {
+          const creator = await User.findOne({ where: { id: article.creatorId } });
+          if (creator) {
+            const followerCount = await Follow.count({ where: { followee: creator.id } });
 
-          console.log(article.get());
-          const payload : ArticleDto = {
-            ...trimNull(article.get()),
-            creator: { ...trimNull(creator.get()), followerCount },
-          };
+            console.log(article.get());
+            const payload: ArticleDto = {
+              ...trimNull(article.get()),
+              creator: { ...trimNull(creator.get()), followerCount },
+            };
 
-          // 본인 글인지 플래그 false일 시 포함하지 않음
-          if (typeof caller !== 'undefined') {
-            const isMine = creator.id === caller.id;
-            if (isMine) {
-              payload.isMine = isMine;
+            // 본인 글인지 플래그 false일 시 포함하지 않음
+            if (typeof caller !== 'undefined') {
+              const isMine = creator.id === caller.id;
+              if (isMine) {
+                payload.isMine = isMine;
+              }
             }
-          }
 
-          // 작성자 아이디 미포함
-          // @ts-ignore
-          delete payload.creatorId;
-          res.send(payload);
+            // 작성자 아이디 미포함
+            // @ts-ignore
+            delete payload.creatorId;
+            res.send(payload);
+          } else {
+            res.send(article);
+          }
         } else {
-          res.send(article);
+          res.send('ARTICLE_NOT_FOUND');
         }
-      } else {
-        res.send('ARTICLE_NOT_FOUND');
-      }
-    }).catch((e) => {
-      console.log(e);
-      res.send('SERVER_ERROR');
-    });
+      })
+      .catch((e) => {
+        console.log(e);
+        res.send('SERVER_ERROR');
+      });
   }
 });
 
@@ -70,38 +70,40 @@ ArticleRouter.get('/articles', async (req, res) => {
     .then(async (result) => {
       const { count, rows } = result;
       if (rows) {
-        const payloads = await Promise.all(rows.map(async (article) => {
-          const creator = await article.getCreator().catch((e) => {
-            res.status(500);
-            res.send(e);
-          });
+        const payloads = await Promise.all(
+          rows.map(async (article) => {
+            const creator = await article.getCreator().catch((e) => {
+              res.status(500);
+              res.send(e);
+            });
 
-          if (creator) {
-            const followerCount = await Follow.count({ where: { followee: creator.id } });
+            if (creator) {
+              const followerCount = await Follow.count({ where: { followee: creator.id } });
 
-            const payload : ArticleDto = {
-              ...trimNull(article.get()),
-              creator: {
-                ...trimNull(creator.get()),
-                followerCount,
-              },
-            };
+              const payload: ArticleDto = {
+                ...trimNull(article.get()),
+                creator: {
+                  ...trimNull(creator.get()),
+                  followerCount,
+                },
+              };
 
-            // isMine
-            if (typeof caller !== 'undefined') {
-              const isMine = creator.id === caller.id;
-              if (isMine) {
-                payload.isMine = isMine;
+              // isMine
+              if (typeof caller !== 'undefined') {
+                const isMine = creator.id === caller.id;
+                if (isMine) {
+                  payload.isMine = isMine;
+                }
               }
-            }
 
-            // 작성자 아이디 미포함
-            // @ts-ignore
-            delete payload.creatorId;
-            return payload;
-          }
-          return article;
-        }));
+              // 작성자 아이디 미포함
+              // @ts-ignore
+              delete payload.creatorId;
+              return payload;
+            }
+            return article;
+          }),
+        );
         const pagination = makePagination(filter, rows.length, count);
         res.setHeader('X-Pagination', pagination);
         res.send(payloads);
@@ -125,42 +127,47 @@ ArticleRouter.get('/articles/:creatorId', async (req, res) => {
   const user = await User.findOne({ where: { id: creatorId } });
   if (user) {
     await Article.findAndCountAll({
-      offset, limit: filter.size, where: { creatorId }, order: [['id', 'DESC']],
+      offset,
+      limit: filter.size,
+      where: { creatorId },
+      order: [['id', 'DESC']],
     }).then(async (result) => {
       const { count, rows } = result;
       const pagination = makePagination(filter, rows.length, count);
 
       if (rows) {
-        const payloads = await Promise.all(rows.map(async (article) => {
-          const creator = await article.getCreator().catch((e) => {
-            res.status(500);
-            res.send(e);
-          });
+        const payloads = await Promise.all(
+          rows.map(async (article) => {
+            const creator = await article.getCreator().catch((e) => {
+              res.status(500);
+              res.send(e);
+            });
 
-          if (creator) {
-            const followerCount = await Follow.count({ where: { followee: creator.id } });
+            if (creator) {
+              const followerCount = await Follow.count({ where: { followee: creator.id } });
 
-            const payload : ArticleDto = {
-              ...trimNull(article.get()),
-              creator: {
-                ...trimNull(creator.get()),
-                followerCount,
-              },
-            };
+              const payload: ArticleDto = {
+                ...trimNull(article.get()),
+                creator: {
+                  ...trimNull(creator.get()),
+                  followerCount,
+                },
+              };
 
-            if (typeof caller !== 'undefined') {
-              const isMine = creator.id === caller.id;
-              if (isMine) {
-                payload.isMine = isMine;
+              if (typeof caller !== 'undefined') {
+                const isMine = creator.id === caller.id;
+                if (isMine) {
+                  payload.isMine = isMine;
+                }
               }
-            }
 
-            // @ts-ignore
-            delete payload.creatorId;
-            return payload;
-          }
-          return article;
-        }));
+              // @ts-ignore
+              delete payload.creatorId;
+              return payload;
+            }
+            return article;
+          }),
+        );
         res.setHeader('X-Pagination', pagination);
         res.send(payloads);
       } else {
@@ -185,14 +192,16 @@ ArticleRouter.post('/article', async (req, res) => {
   }
 
   console.log('creating', creatingArticle);
-  Article.create(creatingArticle).then((result) => {
-    console.log('success');
-    res.send(result);
-  }).catch((e) => {
-    console.log(e);
-    console.log('failed');
-    res.send(null);
-  });
+  Article.create(creatingArticle)
+    .then((result) => {
+      console.log('success');
+      res.send(result);
+    })
+    .catch((e) => {
+      console.log(e);
+      console.log('failed');
+      res.send(null);
+    });
 });
 
 /**
@@ -215,19 +224,21 @@ ArticleRouter.put('/article/:articleId', (req, res) => {
 
   // 정확한 번호의 글을 수정하고있는지
   if (Number(articleId) !== updatingArticle.id) {
-    console.log('id doesn\'t match');
+    console.log("id doesn't match");
     res.send('failed');
     return;
   }
   console.log('updating', updatingArticle);
-  Article.update(updatingArticle, { where: { id: articleId } }).then((result) => {
-    console.log('success');
-    res.send(result);
-  }).catch((e) => {
-    console.log(e);
-    console.log('failed');
-    res.send(null);
-  });
+  Article.update(updatingArticle, { where: { id: articleId } })
+    .then((result) => {
+      console.log('success');
+      res.send(result);
+    })
+    .catch((e) => {
+      console.log(e);
+      console.log('failed');
+      res.send(null);
+    });
 });
 
 /**
@@ -248,14 +259,17 @@ ArticleRouter.delete('/article/:articleId', async (req, res) => {
       }
     }
 
-    deletingArticle.destroy().then((result) => {
-      console.log('deleted');
-      res.status(200);
-      res.send(result);
-    }).catch((e) => {
-      res.status(500);
-      res.send(e);
-    });
+    deletingArticle
+      .destroy()
+      .then((result) => {
+        console.log('deleted');
+        res.status(200);
+        res.send(result);
+      })
+      .catch((e) => {
+        res.status(500);
+        res.send(e);
+      });
   }
 });
 
