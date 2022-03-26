@@ -24,6 +24,7 @@ FeedRouter.get('/feeds', async (req, res) => {
         limit: filter.size,
         // @ts-ignore
         where: { creatorId: { [Op.in]: followeeIds } },
+        order: [['id', 'DESC']],
       }).then(async (result) => {
         const { count, rows } = result;
         const payloads = await Promise.all(
