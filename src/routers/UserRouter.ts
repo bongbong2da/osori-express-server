@@ -2,6 +2,7 @@ import express from 'express';
 import jwt from 'jsonwebtoken';
 import { isUndefined } from 'lodash';
 import { Op } from 'sequelize';
+import { UserDto } from '../payloads/payloads';
 import sequelize from '../models';
 import { user } from '../models/user';
 import {
@@ -11,6 +12,7 @@ import {
 const UserRouter = express.Router();
 const User = sequelize.user;
 const Token = sequelize.token;
+const Follow = sequelize.follow;
 
 /**
  * @getUser
@@ -21,10 +23,14 @@ UserRouter.get('/user/:userId', async (req, res) => {
 
   if (parameters.loginType) {
     if (!isUndefined(userId)) {
-      await User.findOne({ where: { externalId: userId as string, loginType: parameters.loginType as string } }).then((result) => {
+      await User.findOne({ where: { externalId: userId as string, loginType: parameters.loginType as string } }).then(async (result) => {
         if (result !== null) {
+          const followerCount = await Follow.count({ where: { followee: userId } });
+          const followingCount = await Follow.count({ where: { follower: userId } });
+          const payload : UserDto = { ...(trimNull(result.get())), followerCount, followingCount };
+
           res.status(200);
-          res.send(trimNull(result.get()));
+          res.send(payload);
         } else {
           res.send('USER_NOT_FOUND');
         }
@@ -37,10 +43,14 @@ UserRouter.get('/user/:userId', async (req, res) => {
       res.send('BAD_REQUEST');
     }
   } else if (!isUndefined(userId)) {
-    await User.findOne({ where: { id: userId } }).then((result) => {
+    await User.findOne({ where: { id: userId } }).then(async (result) => {
       if (result !== null) {
+        const followerCount = await Follow.count({ where: { followee: userId } });
+        const followingCount = await Follow.count({ where: { follower: userId } });
+        const payload : UserDto = { ...(trimNull(result.get())), followerCount, followingCount };
+
         res.status(200);
-        res.send(trimNull(result.get()));
+        res.send(payload);
       } else {
         res.send('USER_NOT_FOUND');
       }
