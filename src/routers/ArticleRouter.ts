@@ -11,6 +11,7 @@ import {
 const ArticleRouter = express.Router();
 const Article = sequelize.article;
 const User = sequelize.user;
+const Follow = sequelize.follow;
 
 /**
  * @getArticle
@@ -25,10 +26,12 @@ ArticleRouter.get('/article/:articleId', (req, res) => {
       if (article) {
         const creator = await User.findOne({ where: { id: article.creatorId } });
         if (creator) {
+          const followerCount = await Follow.count({ where: { followee: creator.id } });
+
           console.log(article.get());
           const payload : ArticleDto = {
             ...trimNull(article.get()),
-            creator: trimNull(creator.get()),
+            creator: { ...trimNull(creator.get()), followerCount },
           };
 
           // 본인 글인지 플래그 false일 시 포함하지 않음
@@ -74,9 +77,14 @@ ArticleRouter.get('/articles', async (req, res) => {
           });
 
           if (creator) {
+            const followerCount = await Follow.count({ where: { followee: creator.id } });
+
             const payload : ArticleDto = {
               ...trimNull(article.get()),
-              creator: trimNull(creator.get()),
+              creator: {
+                ...trimNull(creator.get()),
+                followerCount,
+              },
             };
 
             // isMine
@@ -130,9 +138,14 @@ ArticleRouter.get('/articles/:creatorId', async (req, res) => {
           });
 
           if (creator) {
+            const followerCount = await Follow.count({ where: { followee: creator.id } });
+
             const payload : ArticleDto = {
               ...trimNull(article.get()),
-              creator: trimNull(creator.get()),
+              creator: {
+                ...trimNull(creator.get()),
+                followerCount,
+              },
             };
 
             if (typeof caller !== 'undefined') {
