@@ -1,10 +1,12 @@
 import express from 'express';
 import { isUndefined } from 'lodash';
-import { makeFilter, makePagination, trimNull } from '../utils/objectUtil';
-import { ArticleDto } from '../payloads/payloads';
 import sequelize from '../models';
-import { user } from '../models/user';
 import { article } from '../models/article';
+import { user } from '../models/user';
+import { ArticleDto } from '../payloads/payloads';
+import {
+  getCaller, makeFilter, makePagination, trimNull,
+} from '../utils/objectUtil';
 
 const ArticleRouter = express.Router();
 const Article = sequelize.article;
@@ -14,16 +16,30 @@ const User = sequelize.user;
  * @getArticle
  */
 ArticleRouter.get('/article/:articleId', (req, res) => {
+  // @ts-ignore
+  const caller = getCaller(req.header('Authorization'));
+
   const { articleId } = req.params;
   if (!isUndefined(articleId)) {
     Article.findOne({ where: { id: articleId } }).then(async (article) => {
       if (article) {
         const creator = await User.findOne({ where: { id: article.creatorId } });
         if (creator) {
+          console.log(article.get());
           const payload : ArticleDto = {
             ...trimNull(article.get()),
             creator: trimNull(creator.get()),
           };
+
+          // 본인 글인지 플래그 false일 시 포함하지 않음
+          if (typeof caller !== 'undefined') {
+            const isMine = creator.id === caller.id;
+            if (isMine) {
+              payload.isMine = isMine;
+            }
+          }
+
+          // 작성자 아이디 미포함
           // @ts-ignore
           delete payload.creatorId;
           res.send(payload);
@@ -41,10 +57,11 @@ ArticleRouter.get('/article/:articleId', (req, res) => {
 });
 
 /**
- * @getArticlesByUserId
+ * @getArticles
  */
 ArticleRouter.get('/articles', async (req, res) => {
   const { filter, offset } = makeFilter(req.query);
+  const caller = getCaller(req.header('Authorization'));
 
   await Article.findAndCountAll({ offset, limit: filter.size, order: [['id', 'DESC']] })
     .then(async (result) => {
@@ -57,10 +74,21 @@ ArticleRouter.get('/articles', async (req, res) => {
           });
 
           if (creator) {
-            const payload = {
+            const payload : ArticleDto = {
               ...trimNull(article.get()),
               creator: trimNull(creator.get()),
             };
+
+            // isMine
+            if (typeof caller !== 'undefined') {
+              const isMine = creator.id === caller.id;
+              if (isMine) {
+                payload.isMine = isMine;
+              }
+            }
+
+            // 작성자 아이디 미포함
+            // @ts-ignore
             delete payload.creatorId;
             return payload;
           }
@@ -83,11 +111,14 @@ ArticleRouter.get('/articles', async (req, res) => {
  */
 ArticleRouter.get('/articles/:creatorId', async (req, res) => {
   const { filter, offset } = makeFilter(req.query);
+  const caller = getCaller(req.header('Authorization'));
   const creatorId = Number(req.params.creatorId);
 
   const user = await User.findOne({ where: { id: creatorId } });
   if (user) {
-    await Article.findAndCountAll({ offset, limit: filter.size, order: [['id', 'DESC']] }).then(async (result) => {
+    await Article.findAndCountAll({
+      offset, limit: filter.size, where: { creatorId }, order: [['id', 'DESC']],
+    }).then(async (result) => {
       const { count, rows } = result;
       const pagination = makePagination(filter, rows.length, count);
 
@@ -99,10 +130,19 @@ ArticleRouter.get('/articles/:creatorId', async (req, res) => {
           });
 
           if (creator) {
-            const payload = {
+            const payload : ArticleDto = {
               ...trimNull(article.get()),
               creator: trimNull(creator.get()),
             };
+
+            if (typeof caller !== 'undefined') {
+              const isMine = creator.id === caller.id;
+              if (isMine) {
+                payload.isMine = isMine;
+              }
+            }
+
+            // @ts-ignore
             delete payload.creatorId;
             return payload;
           }
@@ -147,7 +187,20 @@ ArticleRouter.post('/article', async (req, res) => {
  */
 ArticleRouter.put('/article/:articleId', (req, res) => {
   const { articleId } = req.params;
-  const updatingArticle = req.body as user;
+  const updatingArticle = req.body as ArticleDto;
+
+  const caller = getCaller(req.get('Authorization'));
+
+  // 작성자가 수정하고 있는지
+  if (caller) {
+    if (caller.id !== updatingArticle.creator.id) {
+      res.status(400);
+      res.send('작성자 본인이 아닙니다.');
+      return;
+    }
+  }
+
+  // 정확한 번호의 글을 수정하고있는지
   if (Number(articleId) !== updatingArticle.id) {
     console.log('id doesn\'t match');
     res.send('failed');
@@ -167,17 +220,30 @@ ArticleRouter.put('/article/:articleId', (req, res) => {
 /**
  * @deleteArticle
  */
-ArticleRouter.delete('/article/:articleId', (req, res) => {
+ArticleRouter.delete('/article/:articleId', async (req, res) => {
   const { articleId } = req.params;
-  console.log('deleting', articleId);
-  Article.destroy({ where: { id: articleId } }).then((result) => {
-    console.log('deleted');
-    res.status(200);
-    res.send(result);
-  }).catch((e) => {
-    res.status(500);
-    res.send(e);
-  });
+
+  const caller = getCaller(req.get('Authorization'));
+
+  const deletingArticle = await Article.findOne({ where: { id: articleId } });
+  if (deletingArticle) {
+    if (caller) {
+      if (caller.id !== deletingArticle.creatorId) {
+        res.status(400);
+        res.send('작성자 본인이 아닙니다.');
+        return;
+      }
+    }
+
+    deletingArticle.destroy().then((result) => {
+      console.log('deleted');
+      res.status(200);
+      res.send(result);
+    }).catch((e) => {
+      res.status(500);
+      res.send(e);
+    });
+  }
 });
 
 export default ArticleRouter;
