@@ -7,7 +7,7 @@ properties:
     type: number
   loginType:
     type: string
-    enum : ['NONE', 'KAKAO', 'GOOGLE', 'APPLE']
+    enum: ['NONE', 'KAKAO', 'GOOGLE', 'APPLE']
   externalId:
     type: string
   nickname:
@@ -28,7 +28,7 @@ properties:
     type: string
   createDate:
     type: string
-    format : date
+    format: date
   modifyDate:
     type: string
-    format : date
+    format: date

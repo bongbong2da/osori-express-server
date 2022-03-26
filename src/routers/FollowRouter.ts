@@ -17,13 +17,15 @@ FollowRouter.post('/follow/:userId', async (req, res) => {
     if (exists) {
       throw { code: 409, message: '이미 팔로우한 유저입니다' };
     } else {
-      Follow.create({ follower: follower.id, followee: followeeId }).then((result) => {
-        res.send(result.get());
-      }).catch(() => {
-        throw { code: 500, message: 'server error' };
-      });
+      Follow.create({ follower: follower.id, followee: followeeId })
+        .then((result) => {
+          res.send(result.get());
+        })
+        .catch(() => {
+          throw { code: 500, message: 'server error' };
+        });
     }
-  } catch (e : any) {
+  } catch (e: any) {
     res.status(e.code || 500);
     res.send(e.message || e);
     console.log(e);
@@ -39,7 +41,7 @@ FollowRouter.delete('/follow/:userId', (req, res) => {
     Follow.destroy({ where: { follower: follower.id, followee: followeeId } }).then((result) => {
       res.send('UNFOLLOWED');
     });
-  } catch (e : any) {
+  } catch (e: any) {
     console.log(e);
     res.status(e.code || 500);
     res.send(e.message || e);
@@ -56,10 +58,12 @@ FollowRouter.get('/follow/follower/:userId', async (req, res) => {
       res.send('사용자가 조회되지 않습니다');
     } else {
       const follows = await targetUser.getFolloweeFollows().then((res) => res);
-      const followers = await Promise.all(follows.map(async (follow) => {
-        const user = await follow.getFollowerUser();
-        return trimNull(user.get());
-      }));
+      const followers = await Promise.all(
+        follows.map(async (follow) => {
+          const user = await follow.getFollowerUser();
+          return trimNull(user.get());
+        }),
+      );
       res.send(followers);
     }
   } catch (e) {
@@ -79,10 +83,12 @@ FollowRouter.get('/follow/following/:userId', async (req, res) => {
       res.send('사용자가 조회되지 않습니다');
     } else {
       const follows = await targetUser.getFolloweeFollows().then((res) => res);
-      const followers = await Promise.all(follows.map(async (follow) => {
-        const user = await follow.getFolloweeUser();
-        return trimNull(user.get());
-      }));
+      const followers = await Promise.all(
+        follows.map(async (follow) => {
+          const user = await follow.getFolloweeUser();
+          return trimNull(user.get());
+        }),
+      );
       res.send(followers);
     }
   } catch (e) {
