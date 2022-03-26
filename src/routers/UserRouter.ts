@@ -4,7 +4,9 @@ import { isUndefined } from 'lodash';
 import { Op } from 'sequelize';
 import sequelize from '../models';
 import { user } from '../models/user';
-import { makeFilter, makePagination, trimNull } from '../utils/objectUtil';
+import {
+  getCaller, makeFilter, makePagination, trimNull,
+} from '../utils/objectUtil';
 
 const UserRouter = express.Router();
 const User = sequelize.user;
@@ -101,6 +103,16 @@ UserRouter.post('/user', (req, res) => {
  */
 UserRouter.put('/user/:userId', (req, res) => {
   const { userId } = req.params;
+
+  const caller = getCaller(req.header('Authorization'));
+  if (caller) {
+    if (caller.id !== Number(userId)) {
+      res.status(400);
+      res.send('사용자 본인이 아닙니다.');
+      return;
+    }
+  }
+
   const updatingUser = req.body as user;
   if (Number(userId) !== updatingUser.id) {
     console.log('id doesn\'t match');
@@ -123,6 +135,16 @@ UserRouter.put('/user/:userId', (req, res) => {
  */
 UserRouter.delete('/user/:userId', (req, res) => {
   const { userId } = req.params;
+
+  const caller = getCaller(req.header('Authorization'));
+  if (caller) {
+    if (caller.id !== Number(userId)) {
+      res.status(400);
+      res.send('사용자 본인이 아닙니다.');
+      return;
+    }
+  }
+
   console.log('deleting', userId);
   User.destroy({ where: { id: userId } }).then((result) => {
     console.log(result);
