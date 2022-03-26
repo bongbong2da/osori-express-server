@@ -24,7 +24,7 @@ properties:
     type: boolean
   createDate:
     type: string
-    format : date
+    format: date
   modifyDate:
     type: string
-    format : date
+    format: date

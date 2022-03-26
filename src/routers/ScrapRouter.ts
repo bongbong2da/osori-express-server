@@ -21,13 +21,15 @@ ScrapRouter.post('/scrap/:articleId', async (req, res) => {
     if (_.find(exists, { articleId })) {
       throw { code: 409, message: '이미 스크랩한 글입니다' };
     } else {
-      Scrap.create({ userId: scrapper.id, articleId }).then((result) => {
-        res.send(result.get());
-      }).catch(() => {
-        throw { code: 500, message: 'server error' };
-      });
+      Scrap.create({ userId: scrapper.id, articleId })
+        .then((result) => {
+          res.send(result.get());
+        })
+        .catch(() => {
+          throw { code: 500, message: 'server error' };
+        });
     }
-  } catch (e : any) {
+  } catch (e: any) {
     res.status(e.code || 500);
     res.send(e.message || e);
     console.log(e);
@@ -52,7 +54,7 @@ ScrapRouter.delete('/scrap/:articleId', (req, res) => {
           res.send('server error');
       }
     });
-  } catch (e : any) {
+  } catch (e: any) {
     console.log(e);
     res.status(e.code || 500);
     res.send(e.message || e);
@@ -67,10 +69,12 @@ ScrapRouter.get('/scraps/:userId', async (req, res) => {
     res.send('사용자 정보를 찾을 수 없습니다');
   } else {
     const scraps = await targetUser.getScraps();
-    const payload = await Promise.all(scraps.map(async (scrap) => {
-      const article = await scrap.getArticle();
-      return trimNull(article.get());
-    }));
+    const payload = await Promise.all(
+      scraps.map(async (scrap) => {
+        const article = await scrap.getArticle();
+        return trimNull(article.get());
+      }),
+    );
     res.send(payload);
   }
 });

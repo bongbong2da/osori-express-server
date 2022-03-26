@@ -1,4 +1,4 @@
 UserDto:
-  $ref : './UserDto.yaml'
+  $ref: './UserDto.yaml'
 ArticleDto:
-  $ref : './ArticleDto.yaml'
+  $ref: './ArticleDto.yaml'

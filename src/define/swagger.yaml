@@ -1,13 +1,13 @@
-swagger: "2.0"
-basePath: "https://osori.team-penthouse.com"
-host : "https://osori.team-penthouse.com"
+swagger: '2.0'
+basePath: 'https://osori.team-penthouse.com'
+host: 'https://osori.team-penthouse.com'
 servers:
-    - description: Base Url
-      url: https://osori.team-penthouse.com
+  - description: Base Url
+    url: https://osori.team-penthouse.com
 info:
-    version : "1.0.0"
-    title : ""
+  version: '1.0.0'
+  title: ''
 paths:
-    $ref : './paths/paths.yaml'
+  $ref: './paths/paths.yaml'
 definitions:
-    $ref : './definitions/definitions.yaml'
+  $ref: './definitions/definitions.yaml'

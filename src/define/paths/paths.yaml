@@ -1,16 +1,16 @@
 #User
 /users:
-  $ref : './users.yaml#/users'
+  $ref: './users.yaml#/users'
 /user:
-  $ref : './users.yaml#/user'
+  $ref: './users.yaml#/user'
 /user/{userId}:
-  $ref : './users.yaml#/user-id'
+  $ref: './users.yaml#/user-id'
 /user/login:
-  $ref : './users.yaml#/login'
+  $ref: './users.yaml#/login'
 #Article
 /articles:
-  $ref : './articles.yaml#/articles'
+  $ref: './articles.yaml#/articles'
 /article:
-  $ref : './articles.yaml#/article'
+  $ref: './articles.yaml#/article'
 /article/{articleId}:
-  $ref : './articles.yaml#/article-id'
+  $ref: './articles.yaml#/article-id'

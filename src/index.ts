@@ -4,6 +4,7 @@ import jwt, { JwtPayload } from 'jsonwebtoken';
 import swaggerJSDoc, { SwaggerDefinition } from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
 import cors from 'cors';
+import FeedRouter from './routers/FeedRouter';
 import ScrapRouter from './routers/ScrapRouter';
 import FollowRouter from './routers/FollowRouter';
 import sequelize from './models';
@@ -79,7 +80,7 @@ app.use((req, res, next) => {
  * @Swagger
  */
 
-const swaggerDefinitions : SwaggerDefinition = {
+const swaggerDefinitions: SwaggerDefinition = {
   swagger: '2.0',
   host: process.env.NODE_ENV === 'development' ? `localhost:${port}` : 'osori.team-penthouse.com',
   schemes: ['https'],
@@ -98,7 +99,11 @@ const swagger = swaggerJSDoc({
 const jsonSchema = require('../build/swagger.json');
 
 app.get('/api-docs/swagger.json', (req, res) => res.json(jsonSchema));
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swagger, { swaggerUrl: '/api-docs/swagger.json' }));
+app.use(
+  '/api-docs',
+  swaggerUi.serve,
+  swaggerUi.setup(swagger, { swaggerUrl: '/api-docs/swagger.json' }),
+);
 
 app.get('/', (req, res) => {
   res.send('OSORI_SERVER');
@@ -108,6 +113,7 @@ app.use(UserRouter);
 app.use(ArticleRouter);
 app.use(FollowRouter);
 app.use(ScrapRouter);
+app.use(FeedRouter);
 
 app.post('/clova/callback', (req, res) => {
   if (req.statusCode === 200) {

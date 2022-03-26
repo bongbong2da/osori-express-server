@@ -2,7 +2,7 @@ import jwt from 'jsonwebtoken';
 import { user } from '../models/user';
 import { PaginationInterface, SearchInterface } from '../types/CommonTypes';
 
-export const trimNull = (object : any) => {
+export const trimNull = (object: any) => {
   const trimmingObject = object;
   Object.keys(object).forEach((key) => {
     // eslint-disable-next-line no-param-reassign
@@ -11,7 +11,9 @@ export const trimNull = (object : any) => {
   return trimmingObject;
 };
 
-export const makeFilter = (filter : any) : {filter : PaginationInterface & SearchInterface, offset : number} => {
+export const makeFilter = (
+  filter: any,
+): { filter: PaginationInterface & SearchInterface; offset: number } => {
   const converting = { ...filter };
   Object.keys(converting).forEach((key) => {
     if (key === 'searchKeyword') return;
@@ -31,12 +33,16 @@ export const makeFilter = (filter : any) : {filter : PaginationInterface & Searc
   };
 };
 
-export const makePagination = (filter : PaginationInterface & SearchInterface, currentCount : number, totalCount : number) => {
+export const makePagination = (
+  filter: PaginationInterface & SearchInterface,
+  currentCount: number,
+  totalCount: number,
+) => {
   /**
    * @Initialize
    */
   const totalPages = Math.ceil(totalCount / (filter.size || 10));
-  const pagination : PaginationInterface & SearchInterface = {
+  const pagination: PaginationInterface & SearchInterface = {
     ...filter,
     totalCount,
     totalPages,
@@ -47,7 +53,7 @@ export const makePagination = (filter : PaginationInterface & SearchInterface, c
   /**
    * @HasNext, HasPrevious
    */
-  pagination.hasNext = (page * size + currentCount) < totalCount;
+  pagination.hasNext = page * size + currentCount < totalCount;
   pagination.hasPrevious = page === totalPages;
 
   /**
@@ -61,7 +67,7 @@ export const makePagination = (filter : PaginationInterface & SearchInterface, c
 /**
  * @param token headers['Authorization']
  */
-export const getCaller = (token : string | undefined) => {
+export const getCaller = (token: string | undefined) => {
   if (typeof token !== 'undefined') {
     const splited = token.split(' '); // Trim Bear
     if (splited.length === 2) {
