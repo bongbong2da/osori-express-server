@@ -1,4 +1,5 @@
-import { log } from 'util';
+import jwt from 'jsonwebtoken';
+import { user } from '../models/user';
 import { PaginationInterface, SearchInterface } from '../types/CommonTypes';
 
 export const trimNull = (object : any) => {
@@ -55,4 +56,20 @@ export const makePagination = (filter : PaginationInterface & SearchInterface, c
   delete pagination.searchKeyword;
 
   return JSON.stringify(pagination);
+};
+
+/**
+ * @param token headers['Authorization']
+ */
+export const getCaller = (token : string | undefined) => {
+  if (typeof token !== 'undefined') {
+    const splited = token.split(' '); // Trim Bear
+    if (splited.length === 2) {
+      console.log(splited);
+      // @ts-ignore
+      return (jwt.decode(splited[1]) as string).user as user;
+    }
+    return undefined;
+  }
+  return undefined;
 };
