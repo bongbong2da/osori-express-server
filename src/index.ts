@@ -93,10 +93,10 @@ const swaggerDefinitions: SwaggerDefinition = {
 
 const swagger = swaggerJSDoc({
   swaggerDefinition: swaggerDefinitions,
-  apis: ['build/swagger.yaml'],
+  apis: ['swagger/swagger.yaml'],
 });
 
-const jsonSchema = require('../build/swagger.json');
+const jsonSchema = require('../swagger/swagger.json');
 
 app.get('/api-docs/swagger.json', (req, res) => res.json(jsonSchema));
 app.use(

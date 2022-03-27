@@ -1,0 +1,780 @@
+{
+  "swagger": "2.0",
+  "host": "osori.team-penthouse.com",
+  "info": {
+    "version": "1.0.0",
+    "title": "Osori API",
+    "description": "오소리 API"
+  },
+  "securityDefinitions": {
+    "Bearer": {
+      "type": "apiKey",
+      "name": "Authorization",
+      "in": "header"
+    }
+  },
+  "schemes": [
+    "https"
+  ],
+  "paths": {
+    "/user/{userId}": {
+      "get": {
+        "tags": [
+          "User"
+        ],
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "description": "test",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "something",
+            "schema": {
+              "$ref": "#/definitions/UserDto"
+            }
+          }
+        }
+      },
+      "parameters": [
+        {
+          "name": "userId",
+          "type": "string",
+          "required": true,
+          "in": "path"
+        }
+      ],
+      "put": {
+        "tags": [
+          "User"
+        ],
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "description": "test",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "userId",
+            "required": true,
+            "in": "path",
+            "type": "string"
+          },
+          {
+            "name": "user",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/UserDto"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "something",
+            "schema": {
+              "$ref": "#/definitions/UserDto"
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "User"
+        ],
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "description": "test",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "userId",
+            "required": true,
+            "in": "path",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "something",
+            "schema": {
+              "$ref": "#/definitions/ArticleDto"
+            }
+          }
+        }
+      }
+    },
+    "/users": {
+      "get": {
+        "tags": [
+          "User"
+        ],
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "description": "test",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "something",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/UserDto"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/user": {
+      "post": {
+        "tags": [
+          "User"
+        ],
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "description": "test",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "user",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/UserDto"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "something",
+            "schema": {
+              "$ref": "#/definitions/UserDto"
+            }
+          }
+        }
+      }
+    },
+    "/user/login": {
+      "post": {
+        "tags": [
+          "User"
+        ],
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "description": "test",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "user",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/LoginBody"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "something",
+            "schema": {
+              "$ref": "#/definitions/UserDto"
+            }
+          }
+        }
+      }
+    },
+    "/article/{articleId}": {
+      "get": {
+        "tags": [
+          "Article"
+        ],
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "description": "test",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "articleId",
+            "required": true,
+            "in": "path",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "something",
+            "schema": {
+              "$ref": "#/definitions/ArticleDto"
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Article"
+        ],
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "description": "test",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "articleId",
+            "required": true,
+            "in": "path",
+            "type": "string"
+          },
+          {
+            "name": "article",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/ArticleDto"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "something",
+            "schema": {
+              "$ref": "#/definitions/ArticleDto"
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Article"
+        ],
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "description": "test",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "articleId",
+            "required": true,
+            "in": "path",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "something",
+            "schema": {
+              "$ref": "#/definitions/ArticleDto"
+            }
+          }
+        }
+      }
+    },
+    "/articles": {
+      "get": {
+        "tags": [
+          "Article"
+        ],
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "description": "test",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "size",
+            "required": false,
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "something",
+            "schema": {
+              "$ref": "#/definitions/ArticleDto"
+            }
+          }
+        }
+      }
+    },
+    "/articles/{userId}": {
+      "get": {
+        "tags": [
+          "Article"
+        ],
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "description": "test",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "userId",
+            "required": true,
+            "in": "path",
+            "type": "string"
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "size",
+            "required": false,
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "something",
+            "schema": {
+              "$ref": "#/definitions/ArticleDto"
+            }
+          }
+        }
+      }
+    },
+    "/follow/{userId}": {
+      "post": {
+        "tags": [
+          "Follow"
+        ],
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "description": "test",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "userId",
+            "required": true,
+            "in": "path",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "something",
+            "schema": {
+              "$ref": "#/definitions/ArticleDto"
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Follow"
+        ],
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "description": "test",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "userId",
+            "required": true,
+            "in": "path",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "something",
+            "schema": {
+              "$ref": "#/definitions/ArticleDto"
+            }
+          }
+        }
+      }
+    },
+    "/follow/follower/{userId}": {
+      "get": {
+        "tags": [
+          "Follow"
+        ],
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "description": "test",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "userId",
+            "required": true,
+            "in": "path",
+            "type": "string"
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "size",
+            "required": false,
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "something",
+            "schema": {
+              "$ref": "#/definitions/UserDto"
+            }
+          }
+        }
+      }
+    },
+    "/follow/following/{userId}": {
+      "get": {
+        "tags": [
+          "Follow"
+        ],
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "description": "test",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "userId",
+            "required": true,
+            "in": "path",
+            "type": "string"
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "size",
+            "required": false,
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "something",
+            "schema": {
+              "$ref": "#/definitions/UserDto"
+            }
+          }
+        }
+      }
+    },
+    "/scrap/{articleId}": {
+      "post": {
+        "tags": [
+          "Scrap"
+        ],
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "description": "test",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "articleId",
+            "required": true,
+            "in": "path",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "something",
+            "schema": {
+              "$ref": "#/definitions/ArticleDto"
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Scrap"
+        ],
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "description": "test",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "articleId",
+            "required": true,
+            "in": "path",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "something",
+            "schema": {
+              "$ref": "#/definitions/ArticleDto"
+            }
+          }
+        }
+      }
+    },
+    "/scraps/{userId}": {
+      "get": {
+        "tags": [
+          "Scrap"
+        ],
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "description": "test",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "userId",
+            "required": true,
+            "in": "path",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "something",
+            "schema": {
+              "$ref": "#/definitions/ArticleDto"
+            }
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "LoginBody": {
+      "type": "object",
+      "required": [
+        "loginType"
+      ],
+      "properties": {
+        "id": {
+          "type": "number"
+        },
+        "externalId": {
+          "type": "number"
+        },
+        "loginType": {
+          "type": "string"
+        }
+      }
+    },
+    "UserDto": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "loginType": {
+          "type": "string"
+        },
+        "externalId": {
+          "type": "integer"
+        },
+        "nickname": {
+          "type": "string"
+        },
+        "gender": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "phoneNumber": {
+          "type": "string"
+        },
+        "profileImage": {
+          "type": "string"
+        },
+        "ageRange": {
+          "type": "string"
+        },
+        "birthday": {
+          "type": "string"
+        },
+        "followerCount": {
+          "type": "number"
+        },
+        "followingCount": {
+          "type": "number"
+        },
+        "createDate": {
+          "type": "string"
+        },
+        "modifyDate": {
+          "type": "string"
+        }
+      }
+    },
+    "ArticleDto": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer"
+        },
+        "creatorId": {
+          "type": "number"
+        },
+        "creator": {
+          "$ref": "#/definitions/UserDto"
+        },
+        "categoryId": {
+          "type": "number"
+        },
+        "title": {
+          "type": "string"
+        },
+        "viewCount": {
+          "type": "number"
+        },
+        "likeCount": {
+          "type": "number"
+        },
+        "tags": {
+          "type": "string"
+        },
+        "contents": {
+          "type": "string"
+        },
+        "isPublished": {
+          "type": "boolean"
+        },
+        "createDate": {
+          "type": "string"
+        },
+        "modifyDate": {
+          "type": "string"
+        }
+      }
+    },
+    "FollowDto": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "number"
+        },
+        "follower": {
+          "type": "number"
+        },
+        "followee": {
+          "type": "number"
+        },
+        "createDate": {
+          "type": "string"
+        }
+      }
+    },
+    "ScrapDto": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "number"
+        },
+        "userId": {
+          "type": "number"
+        },
+        "articleId": {
+          "type": "number"
+        }
+      }
+    }
+  }
+}

@@ -4,9 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon --watch src --watch build --exec ts-node src/index port=80 &",
+    "start": "nodemon --watch src --watch swagger --exec ts-node src/index port=80 &",
     "dev": "nodemon --watch src --watch swagger/swagger.yaml --watch swagger/swagger.json --exec ts-node src/index.ts NODE_ENV=development",
-    "swagger": "swagger-cli bundle src/define/swagger.yaml --outfile build/swagger.yaml --type yaml && swagger-cli bundle src/define/swagger.yaml --outfile build/swagger.json --type json",
+    "swagger": "swagger-cli bundle src/define/swagger.yaml --outfile swagger/swagger.yaml --type yaml && swagger-cli bundle src/define/swagger.yaml --outfile swagger/swagger.json --type json",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
