@@ -21,16 +21,16 @@ paths:
       description: test
       produces:
         - application/json
+      parameters:
+        - name: userId
+          type : string
+          required : true
+          in : path
       responses:
         '200':
           description: something
           schema:
             $ref: '#/definitions/UserDto'
-    parameters:
-      - name: userId
-        type : string
-        required : true
-        in : path
     put:
       tags:
         - User

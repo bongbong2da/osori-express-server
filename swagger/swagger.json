@@ -31,6 +31,14 @@
         "produces": [
           "application/json"
         ],
+        "parameters": [
+          {
+            "name": "userId",
+            "type": "string",
+            "required": true,
+            "in": "path"
+          }
+        ],
         "responses": {
           "200": {
             "description": "something",
@@ -40,14 +48,6 @@
           }
         }
       },
-      "parameters": [
-        {
-          "name": "userId",
-          "type": "string",
-          "required": true,
-          "in": "path"
-        }
-      ],
       "put": {
         "tags": [
           "User"
