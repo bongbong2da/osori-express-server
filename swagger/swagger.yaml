@@ -1,6 +1,6 @@
-swagger : "2.0"
-host : "osori.team-penthouse.com"
-info :
+swagger: '2.0'
+host: osori.team-penthouse.com
+info:
   version: 1.0.0
   title: Osori API
   description: 오소리 API
@@ -12,12 +12,12 @@ securityDefinitions:
 schemes:
   - https
 paths:
-  /user/{userId}:
+  '/user/{userId}':
     get:
       tags:
         - User
       security:
-        - Bearer : []
+        - Bearer: []
       description: test
       produces:
         - application/json
@@ -28,21 +28,21 @@ paths:
             $ref: '#/definitions/UserDto'
     parameters:
       - name: userId
-        type : string
-        required : true
-        in : path
+        type: string
+        required: true
+        in: path
     put:
       tags:
         - User
       security:
-        - Bearer : []
+        - Bearer: []
       description: test
       produces:
         - application/json
       parameters:
-        - name : userId
+        - name: userId
           required: true
-          in : path
+          in: path
           type: string
         - name: user
           in: body
@@ -57,14 +57,14 @@ paths:
       tags:
         - User
       security:
-        - Bearer : []
+        - Bearer: []
       description: test
       produces:
         - application/json
       parameters:
-        - name : userId
+        - name: userId
           required: true
-          in : path
+          in: path
           type: string
       responses:
         '200':
@@ -76,7 +76,7 @@ paths:
       tags:
         - User
       security:
-        - Bearer : []
+        - Bearer: []
       description: test
       produces:
         - application/json
@@ -92,7 +92,7 @@ paths:
       tags:
         - User
       security:
-        - Bearer : []
+        - Bearer: []
       description: test
       produces:
         - application/json
@@ -111,7 +111,7 @@ paths:
       tags:
         - User
       security:
-        - Bearer : []
+        - Bearer: []
       description: test
       produces:
         - application/json
@@ -125,262 +125,262 @@ paths:
           description: something
           schema:
             $ref: '#/definitions/UserDto'
-  /article/{articleId}:
+  '/article/{articleId}':
     get:
       tags:
         - Article
       security:
-        - Bearer : []
+        - Bearer: []
       description: test
       produces:
         - application/json
       parameters:
         - name: articleId
           required: true
-          in : path
-          type : string
+          in: path
+          type: string
       responses:
         '200':
           description: something
           schema:
-            $ref : '#/definitions/ArticleDto'
+            $ref: '#/definitions/ArticleDto'
     put:
       tags:
         - Article
       security:
-        - Bearer : []
+        - Bearer: []
       description: test
       produces:
         - application/json
       parameters:
         - name: articleId
           required: true
-          in : path
-          type : string
-        - name : article
-          in : body
+          in: path
+          type: string
+        - name: article
+          in: body
           schema:
-            $ref : '#/definitions/ArticleDto'
+            $ref: '#/definitions/ArticleDto'
       responses:
         '200':
           description: something
           schema:
-            $ref : '#/definitions/ArticleDto'
+            $ref: '#/definitions/ArticleDto'
     delete:
       tags:
         - Article
       security:
-        - Bearer : []
+        - Bearer: []
       description: test
       produces:
         - application/json
       parameters:
         - name: articleId
           required: true
-          in : path
-          type : string
+          in: path
+          type: string
       responses:
         '200':
           description: something
           schema:
-            $ref : '#/definitions/ArticleDto'
+            $ref: '#/definitions/ArticleDto'
   /articles:
     get:
       tags:
         - Article
       security:
-        - Bearer : []
+        - Bearer: []
       description: test
       produces:
         - application/json
       parameters:
         - name: page
           required: false
-          in : query
-          type : string
+          in: query
+          type: string
         - name: size
           required: false
-          in : query
-          type : string
+          in: query
+          type: string
       responses:
         '200':
           description: something
           schema:
-            $ref : '#/definitions/ArticleDto'
-  /articles/{userId}:
+            $ref: '#/definitions/ArticleDto'
+  '/articles/{userId}':
     get:
       tags:
         - Article
       security:
-        - Bearer : []
+        - Bearer: []
       description: test
       produces:
         - application/json
       parameters:
         - name: userId
           required: true
-          in : path
-          type : string
+          in: path
+          type: string
         - name: page
           required: false
-          in : query
-          type : string
+          in: query
+          type: string
         - name: size
           required: false
-          in : query
-          type : string
+          in: query
+          type: string
       responses:
         '200':
           description: something
           schema:
-            $ref : '#/definitions/ArticleDto'
-  /follow/{userId}:
+            $ref: '#/definitions/ArticleDto'
+  '/follow/{userId}':
     post:
       tags:
         - Follow
       security:
-        - Bearer : []
+        - Bearer: []
       description: test
       produces:
         - application/json
       parameters:
         - name: userId
           required: true
-          in : path
-          type : string
+          in: path
+          type: string
       responses:
         '200':
           description: something
           schema:
-            $ref : '#/definitions/ArticleDto'
+            $ref: '#/definitions/ArticleDto'
     delete:
       tags:
         - Follow
       security:
-        - Bearer : []
+        - Bearer: []
       description: test
       produces:
         - application/json
       parameters:
         - name: userId
           required: true
-          in : path
-          type : string
+          in: path
+          type: string
       responses:
         '200':
           description: something
           schema:
-            $ref : '#/definitions/ArticleDto'
-  /follow/follower/{userId}:
+            $ref: '#/definitions/ArticleDto'
+  '/follow/follower/{userId}':
     get:
       tags:
         - Follow
       security:
-        - Bearer : []
+        - Bearer: []
       description: test
       produces:
         - application/json
       parameters:
         - name: userId
           required: true
-          in : path
-          type : string
+          in: path
+          type: string
         - name: page
           required: false
-          in : query
-          type : string
+          in: query
+          type: string
         - name: size
           required: false
-          in : query
-          type : string
+          in: query
+          type: string
       responses:
         '200':
           description: something
           schema:
-            $ref : '#/definitions/UserDto'
-  /follow/following/{userId}:
+            $ref: '#/definitions/UserDto'
+  '/follow/following/{userId}':
     get:
       tags:
         - Follow
       security:
-        - Bearer : []
+        - Bearer: []
       description: test
       produces:
         - application/json
       parameters:
         - name: userId
           required: true
-          in : path
-          type : string
+          in: path
+          type: string
         - name: page
           required: false
-          in : query
-          type : string
+          in: query
+          type: string
         - name: size
           required: false
-          in : query
-          type : string
+          in: query
+          type: string
       responses:
         '200':
           description: something
           schema:
-            $ref : '#/definitions/UserDto'
-  /scrap/{articleId}:
+            $ref: '#/definitions/UserDto'
+  '/scrap/{articleId}':
     post:
       tags:
         - Scrap
       security:
-        - Bearer : []
+        - Bearer: []
       description: test
       produces:
         - application/json
       parameters:
         - name: articleId
           required: true
-          in : path
-          type : string
+          in: path
+          type: string
       responses:
         '200':
           description: something
           schema:
-            $ref : '#/definitions/ArticleDto'
+            $ref: '#/definitions/ArticleDto'
     delete:
       tags:
         - Scrap
       security:
-        - Bearer : []
+        - Bearer: []
       description: test
       produces:
         - application/json
       parameters:
         - name: articleId
           required: true
-          in : path
-          type : string
+          in: path
+          type: string
       responses:
         '200':
           description: something
           schema:
-            $ref : '#/definitions/ArticleDto'
-  /scraps/{userId}:
+            $ref: '#/definitions/ArticleDto'
+  '/scraps/{userId}':
     get:
       tags:
         - Scrap
       security:
-        - Bearer : []
+        - Bearer: []
       description: test
       produces:
         - application/json
       parameters:
         - name: userId
           required: true
-          in : path
-          type : string
+          in: path
+          type: string
       responses:
         '200':
           description: something
           schema:
-            $ref : '#/definitions/ArticleDto'
+            $ref: '#/definitions/ArticleDto'
 definitions:
   LoginBody:
     type: object
@@ -394,7 +394,7 @@ definitions:
       loginType:
         type: string
   UserDto:
-    type : object
+    type: object
     properties:
       id:
         type: integer
@@ -435,9 +435,9 @@ definitions:
       creatorId:
         type: number
       creator:
-        $ref : '#/definitions/UserDto'
+        $ref: '#/definitions/UserDto'
       categoryId:
-        type : number
+        type: number
       title:
         type: string
       viewCount:
@@ -447,7 +447,7 @@ definitions:
       tags:
         type: string
       contents:
-        type : string
+        type: string
       isPublished:
         type: boolean
       createDate:
