@@ -633,6 +633,45 @@
           }
         }
       }
+    },
+    "/feeds": {
+      "get": {
+        "tags": [
+          "Feed"
+        ],
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "description": "test",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "size",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "something",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/ArticleDto"
+              }
+            }
+          }
+        }
+      }
     }
   },
   "definitions": {
