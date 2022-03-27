@@ -4,6 +4,8 @@ import jwt, { JwtPayload } from 'jsonwebtoken';
 import swaggerJSDoc, { SwaggerDefinition } from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
 import cors from 'cors';
+import fileUpload from 'express-fileupload';
+import FileRouter from './routers/FileRouter';
 import FeedRouter from './routers/FeedRouter';
 import ScrapRouter from './routers/ScrapRouter';
 import FollowRouter from './routers/FollowRouter';
@@ -25,8 +27,8 @@ process.argv.forEach((arg) => {
 });
 
 app.use(cors());
-
 app.use(express.json());
+app.use(fileUpload());
 
 /**
  * @Authorization
@@ -114,6 +116,7 @@ app.use(ArticleRouter);
 app.use(FollowRouter);
 app.use(ScrapRouter);
 app.use(FeedRouter);
+app.use(FileRouter);
 
 app.post('/clova/callback', (req, res) => {
   if (req.statusCode === 200) {
