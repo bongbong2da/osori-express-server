@@ -13,7 +13,7 @@ import ArticleRouter from './routers/ArticleRouter';
 import UserRouter from './routers/UserRouter';
 
 const app = express();
-let port = 3000;
+let port = process.env.NODE_ENV === 'development' ? 3000 : 80;
 dotenv.config();
 
 // Run with ts-node line port={port} parameter
