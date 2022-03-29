@@ -120,6 +120,9 @@ paths:
           in: body
           schema:
             $ref: '#/definitions/LoginBody'
+        - name: pushToken
+          in: query
+          type: string
       responses:
         '200':
           description: something
@@ -229,6 +232,25 @@ paths:
           required: false
           in: query
           type: string
+      responses:
+        '200':
+          description: something
+          schema:
+            $ref: '#/definitions/ArticleDto'
+  /article:
+    post:
+      tags:
+        - Article
+      security:
+        - Bearer: []
+      description: test
+      produces:
+        - application/json
+      parameters:
+        - name: article
+          in: body
+          schema:
+            $ref: '#/definitions/ArticleDto'
       responses:
         '200':
           description: something

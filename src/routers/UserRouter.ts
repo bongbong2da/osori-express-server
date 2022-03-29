@@ -180,6 +180,10 @@ UserRouter.delete('/user/:userId', (req, res) => {
 
 UserRouter.post('/user/login', async (req, res) => {
   const creatingUser = req.body as user;
+
+  const { pushToken } = req.query;
+  if (pushToken) creatingUser.pushToken = pushToken as string;
+
   creatingUser.loginDate = new Date().toString();
   const { loginType } = creatingUser;
 

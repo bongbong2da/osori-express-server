@@ -17,5 +17,6 @@ module.exports = {
     'no-shadow': 'off',
     'no-throw-literal': 'off',
     'object-curly-newline': 'off',
+    'import/order': 'off',
   },
 };
