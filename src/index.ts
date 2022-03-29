@@ -33,14 +33,12 @@ app.use(express.json());
  */
 const Token = sequelize.token;
 app.use((req, res, next) => {
-  console.log(req.path);
   if (req.path === '/user/login' || req.path.startsWith('/api-docs')) {
     next();
     return;
   }
 
   const accessToken = req.header('Authorization')?.split('Bearer ')[1];
-  console.log(accessToken);
 
   // 제공된 토근이 있다면
   if (typeof accessToken !== 'undefined') {
@@ -56,7 +54,6 @@ app.use((req, res, next) => {
         await Token.findOne({ where: { userId: user.id } }).then((token) => {
           if (token !== null) {
             const tokenFromDB = jwt.decode(token.accessToken!) as JwtPayload;
-            console.log('parsing token');
             if (tokenFromDB !== null) {
               if (user.exp < tokenFromDB.user.exp) {
                 // 토큰이 만료된 경우
