@@ -1,4 +1,6 @@
 import express from 'express';
+import FirebaseApp from '../firebase/FirebaseApp';
+import { messaging } from 'firebase-admin';
 import jwt from 'jsonwebtoken';
 import _ from 'lodash';
 import { trimNull } from '../utils/objectUtil';
@@ -7,6 +9,11 @@ import sequelize from '../models';
 const ScrapRouter = express.Router();
 const Scrap = sequelize.scrap;
 const User = sequelize.user;
+const Article = sequelize.article;
+
+FirebaseApp();
+
+const msg = messaging();
 
 ScrapRouter.post('/scrap/:articleId', async (req, res) => {
   try {
@@ -22,7 +29,22 @@ ScrapRouter.post('/scrap/:articleId', async (req, res) => {
       throw { code: 409, message: '이미 스크랩한 글입니다' };
     } else {
       Scrap.create({ userId: scrapper.id, articleId })
-        .then((result) => {
+        .then(async (result) => {
+          await Article.findOne({ where: { id: articleId } }).then(async (article) => {
+            if (article) {
+              await User.findOne({ where: { id: article.creatorId } }).then(async (user) => {
+                if (user && user.pushToken) {
+                  msg.send({
+                    token: user.pushToken,
+                    notification: {
+                      title: `${scrapper.nickname}님이 회원님의 글을 스크랩하였습니다`,
+                    },
+                  });
+                }
+              });
+            }
+          });
+
           res.send(result.get());
         })
         .catch(() => {

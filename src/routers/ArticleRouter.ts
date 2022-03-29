@@ -1,5 +1,7 @@
 import express from 'express';
+import { messaging } from 'firebase-admin';
 import { isUndefined } from 'lodash';
+import FirebaseApp from '../firebase/FirebaseApp';
 import sequelize from '../models';
 import { article } from '../models/article';
 import { user } from '../models/user';
@@ -10,6 +12,10 @@ const ArticleRouter = express.Router();
 const Article = sequelize.article;
 const User = sequelize.user;
 const Follow = sequelize.follow;
+
+FirebaseApp();
+
+const msg = messaging();
 
 /**
  * @getArticle
@@ -120,63 +126,69 @@ ArticleRouter.get('/articles', async (req, res) => {
  * @getArticlesByUserId
  */
 ArticleRouter.get('/articles/:creatorId', async (req, res) => {
-  const { filter, offset } = makeFilter(req.query);
-  const caller = getCaller(req.header('Authorization'));
-  const creatorId = Number(req.params.creatorId);
+  try {
+    const { filter, offset } = makeFilter(req.query);
+    const caller = getCaller(req.header('Authorization'));
+    const creatorId = Number(req.params.creatorId);
 
-  const user = await User.findOne({ where: { id: creatorId } });
-  if (user) {
-    await Article.findAndCountAll({
-      offset,
-      limit: filter.size,
-      where: { creatorId },
-      order: [['id', 'DESC']],
-    }).then(async (result) => {
-      const { count, rows } = result;
-      const pagination = makePagination(filter, rows.length, count);
+    const user = await User.findOne({ where: { id: creatorId } });
+    if (user) {
+      await Article.findAndCountAll({
+        offset,
+        limit: filter.size,
+        where: { creatorId },
+        order: [['id', 'DESC']],
+      }).then(async (result) => {
+        const { count, rows } = result;
+        const pagination = makePagination(filter, rows.length, count);
 
-      if (rows) {
-        const payloads = await Promise.all(
-          rows.map(async (article) => {
-            const creator = await article.getCreator().catch((e) => {
-              res.status(500);
-              res.send(e);
-            });
+        if (rows) {
+          const payloads = await Promise.all(
+            rows.map(async (article) => {
+              const creator = await article.getCreator().catch((e) => {
+                res.status(500);
+                res.send(e);
+              });
 
-            if (creator) {
-              const followerCount = await Follow.count({ where: { followee: creator.id } });
+              if (creator) {
+                const followerCount = await Follow.count({ where: { followee: creator.id } });
 
-              const payload: ArticleDto = {
-                ...trimNull(article.get()),
-                creator: {
-                  ...trimNull(creator.get()),
-                  followerCount,
-                },
-              };
+                const payload: ArticleDto = {
+                  ...trimNull(article.get()),
+                  creator: {
+                    ...trimNull(creator.get()),
+                    followerCount,
+                  },
+                };
 
-              if (typeof caller !== 'undefined') {
-                const isMine = creator.id === caller.id;
-                if (isMine) {
-                  payload.isMine = isMine;
+                if (typeof caller !== 'undefined') {
+                  const isMine = creator.id === caller.id;
+                  if (isMine) {
+                    payload.isMine = isMine;
+                  }
                 }
-              }
 
-              // @ts-ignore
-              delete payload.creatorId;
-              return payload;
-            }
-            return article;
-          }),
-        );
-        res.setHeader('X-Pagination', pagination);
-        res.send(payloads);
-      } else {
-        res.send([]);
-      }
-    });
-  } else {
-    res.status(400);
-    res.send('사용자를 찾을 수 없습니다.');
+                // @ts-ignore
+                delete payload.creatorId;
+                return payload;
+              }
+              return article;
+            }),
+          );
+          res.setHeader('X-Pagination', pagination);
+          res.send(payloads);
+        } else {
+          res.send([]);
+        }
+      });
+    } else {
+      res.status(400);
+      res.send('사용자를 찾을 수 없습니다.');
+    }
+  } catch (e) {
+    console.log(e);
+    res.status(500);
+    res.send('server error');
   }
 });
 
@@ -184,24 +196,47 @@ ArticleRouter.get('/articles/:creatorId', async (req, res) => {
  * @createArticle
  */
 ArticleRouter.post('/article', async (req, res) => {
-  const creatingArticle = req.body as article;
-  const creator = user.findOne({ where: { id: creatingArticle.creatorId } });
-  if (creator === null) {
-    res.send('user not found');
-    return;
-  }
+  try {
+    const creatingArticle = req.body as article;
+    const creator = await User.findOne({ where: { id: creatingArticle.creatorId } });
+    if (!creator) {
+      res.send('user not found');
+      return;
+    }
 
-  console.log('creating', creatingArticle);
-  Article.create(creatingArticle)
-    .then((result) => {
-      console.log('success');
-      res.send(result);
-    })
-    .catch((e) => {
-      console.log(e);
-      console.log('failed');
-      res.send(null);
-    });
+    console.log('creating', creatingArticle);
+    Article.create(creatingArticle)
+      .then(async (result) => {
+        creator.getFollows().then((follows) => {
+          if (follows) {
+            follows.forEach((follow) => {
+              follow.getFollowerUser().then((user) => {
+                if (user && user.pushToken) {
+                  msg.send({
+                    token: user.pushToken,
+                    notification: {
+                      title: `${creator.nickname}님이 새 글을 작성하였습니다`,
+                    },
+                  });
+                }
+              });
+            });
+          }
+        });
+
+        console.log('success');
+        res.send(result);
+      })
+      .catch((e) => {
+        console.log(e);
+        console.log('failed');
+        res.send(null);
+      });
+  } catch (e) {
+    console.log(e);
+    res.status(500);
+    res.send('server error');
+  }
 });
 
 /**

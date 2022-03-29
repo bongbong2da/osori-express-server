@@ -1,3 +1,4 @@
+import FirebaseApp from './firebase/FirebaseApp';
 import dotenv from 'dotenv';
 import express from 'express';
 import jwt, { JwtPayload } from 'jsonwebtoken';
@@ -13,7 +14,6 @@ import UserRouter from './routers/UserRouter';
 
 const app = express();
 let port = 3000;
-
 dotenv.config();
 
 // Run with ts-node line port={port} parameter
@@ -114,12 +114,6 @@ app.use(ArticleRouter);
 app.use(FollowRouter);
 app.use(ScrapRouter);
 app.use(FeedRouter);
-
-app.post('/clova/callback', (req, res) => {
-  if (req.statusCode === 200) {
-    res.send(req.body);
-  }
-});
 
 app.listen(port, async () => {
   console.log('SERVER_STARTED', port);
