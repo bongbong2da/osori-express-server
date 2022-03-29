@@ -182,7 +182,10 @@ UserRouter.post('/user/login', async (req, res) => {
   const creatingUser = req.body as user;
 
   const { pushToken } = req.query;
+  console.log(pushToken);
   if (pushToken) creatingUser.pushToken = pushToken as string;
+
+  console.log(creatingUser);
 
   creatingUser.loginDate = new Date().toString();
   const { loginType } = creatingUser;
@@ -226,6 +229,11 @@ UserRouter.post('/user/login', async (req, res) => {
   });
 
   if (user) {
+    // PushToken이 제공됐을 시, 저장
+    if (pushToken) {
+      user.update({ pushToken: pushToken as string });
+    }
+
     await Token.findOne({ where: { userId: user.id } }).then(async (token) => {
       const accessToken = jwt.sign({ user: user.get() }, process.env.JWT_SECRET_KEY!, {
         algorithm: 'HS256',
