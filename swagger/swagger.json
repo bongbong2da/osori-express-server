@@ -773,6 +773,9 @@
         "followingCount": {
           "type": "number"
         },
+        "isFollowing": {
+          "type": "boolean"
+        },
         "createDate": {
           "type": "string"
         },

@@ -468,6 +468,8 @@ definitions:
         type: number
       followingCount:
         type: number
+      isFollowing:
+        type: boolean
       createDate:
         type: string
       modifyDate:
