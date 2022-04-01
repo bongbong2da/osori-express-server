@@ -9,6 +9,7 @@ export interface ArticleDto extends articleAttributes {
 export interface UserDto extends userAttributes {
   followerCount?: number;
   followingCount?: number;
+  isFollowing?: boolean;
 }
 
 export interface FollowDto {

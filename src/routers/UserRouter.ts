@@ -1,6 +1,6 @@
 import express from 'express';
 import jwt from 'jsonwebtoken';
-import { isUndefined } from 'lodash';
+import _, { isUndefined } from 'lodash';
 import { Op } from 'sequelize';
 import { UserDto } from '../payloads/payloads';
 import sequelize from '../models';
@@ -16,6 +16,7 @@ const Follow = sequelize.follow;
  * @getUser
  */
 UserRouter.get('/user/:userId', async (req, res) => {
+  const caller = getCaller(req.header('Authorization'));
   const { userId } = req.params;
   const parameters = req.query;
 
@@ -51,6 +52,12 @@ UserRouter.get('/user/:userId', async (req, res) => {
           const followerCount = await Follow.count({ where: { followee: userId } });
           const followingCount = await Follow.count({ where: { follower: userId } });
           const payload: UserDto = { ...trimNull(result.get()), followerCount, followingCount };
+
+          const follows = await Follow.findAll({ where: { follower: caller?.id } });
+          const isFollowing = _.find(follows, { followee: Number(userId) });
+          if (isFollowing) {
+            payload.isFollowing = true;
+          }
 
           res.status(200);
           res.send(payload);
