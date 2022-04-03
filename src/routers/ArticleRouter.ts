@@ -1,6 +1,6 @@
 import express from 'express';
 import { messaging } from 'firebase-admin';
-import { isUndefined } from 'lodash';
+import _, { isUndefined } from 'lodash';
 import FirebaseApp from '../firebase/FirebaseApp';
 import sequelize from '../models';
 import { article } from '../models/article';
@@ -84,15 +84,21 @@ ArticleRouter.get('/articles', async (req, res) => {
             });
 
             if (creator) {
-              const followerCount = await Follow.count({ where: { followee: creator.id } });
+              const follows = await Follow.findAndCountAll({ where: { followee: creator.id } });
 
               const payload: ArticleDto = {
                 ...trimNull(article.get()),
                 creator: {
                   ...trimNull(creator.get()),
-                  followerCount,
+                  followerCount: follows.count,
                 },
               };
+
+              // isFollowing
+              const isFollowing = _.find(follows.rows, { follower: caller?.id });
+              if (isFollowing) {
+                payload.creator.isFollowing = true;
+              }
 
               // isMine
               if (typeof caller !== 'undefined') {
@@ -151,15 +157,21 @@ ArticleRouter.get('/articles/:creatorId', async (req, res) => {
               });
 
               if (creator) {
-                const followerCount = await Follow.count({ where: { followee: creator.id } });
+                const follows = await Follow.findAndCountAll({ where: { followee: creator.id } });
 
                 const payload: ArticleDto = {
                   ...trimNull(article.get()),
                   creator: {
                     ...trimNull(creator.get()),
-                    followerCount,
+                    followerCount: follows.count,
                   },
                 };
+
+                // isFollowing
+                const isFollowing = _.find(follows.rows, { follower: caller?.id });
+                if (isFollowing) {
+                  payload.creator.isFollowing = true;
+                }
 
                 if (typeof caller !== 'undefined') {
                   const isMine = creator.id === caller.id;
