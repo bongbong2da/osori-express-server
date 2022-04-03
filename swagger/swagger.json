@@ -817,6 +817,9 @@
         "isPublished": {
           "type": "boolean"
         },
+        "isScrapped": {
+          "type": "boolean"
+        },
         "createDate": {
           "type": "string"
         },

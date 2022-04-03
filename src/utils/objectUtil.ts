@@ -1,4 +1,5 @@
 import jwt from 'jsonwebtoken';
+import sequelize from '../models';
 import { user } from '../models/user';
 import { PaginationInterface, SearchInterface } from '../types/CommonTypes';
 
@@ -67,13 +68,18 @@ export const makePagination = (
 /**
  * @param token headers['Authorization']
  */
-export const getCaller = (token: string | undefined) => {
+export const getCaller = async (token: string | undefined) => {
   if (typeof token !== 'undefined') {
     const splited = token.split(' '); // Trim Bear
     if (splited.length === 2) {
       console.log(splited);
       // @ts-ignore
-      return (jwt.decode(splited[1]) as string).user as user;
+      const parsedUser = (jwt.decode(splited[1]) as string).user as user;
+      const user = await sequelize.user.findOne({ where: { id: parsedUser?.id } });
+      if (user) {
+        return user;
+      }
+      return undefined;
     }
     return undefined;
   }

@@ -11,6 +11,7 @@ const server = new Sequelize(
     dialect: 'mariadb',
     timezone: '+09:00',
     omitNull: true,
+    logging: false,
   },
 );
 

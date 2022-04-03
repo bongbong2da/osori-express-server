@@ -16,7 +16,7 @@ const Follow = sequelize.follow;
  * @getUser
  */
 UserRouter.get('/user/:userId', async (req, res) => {
-  const caller = getCaller(req.header('Authorization'));
+  const caller = await getCaller(req.header('Authorization'));
   const { userId } = req.params;
   const parameters = req.query;
 
@@ -126,10 +126,10 @@ UserRouter.post('/user', (req, res) => {
 /**
  * @updateUser
  */
-UserRouter.put('/user/:userId', (req, res) => {
+UserRouter.put('/user/:userId', async (req, res) => {
   const { userId } = req.params;
 
-  const caller = getCaller(req.header('Authorization'));
+  const caller = await getCaller(req.header('Authorization'));
   if (caller) {
     if (caller.id !== Number(userId)) {
       res.status(400);
@@ -160,10 +160,10 @@ UserRouter.put('/user/:userId', (req, res) => {
 /**
  * @deleteUser
  */
-UserRouter.delete('/user/:userId', (req, res) => {
+UserRouter.delete('/user/:userId', async (req, res) => {
   const { userId } = req.params;
 
-  const caller = getCaller(req.header('Authorization'));
+  const caller = await getCaller(req.header('Authorization'));
   if (caller) {
     if (caller.id !== Number(userId)) {
       res.status(400);

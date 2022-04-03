@@ -20,9 +20,9 @@ const msg = messaging();
 /**
  * @getArticle
  */
-ArticleRouter.get('/article/:articleId', (req, res) => {
+ArticleRouter.get('/article/:articleId', async (req, res) => {
   // @ts-ignore
-  const caller = getCaller(req.header('Authorization'));
+  const caller = await getCaller(req.header('Authorization'));
 
   const { articleId } = req.params;
   if (!isUndefined(articleId)) {
@@ -33,15 +33,23 @@ ArticleRouter.get('/article/:articleId', (req, res) => {
           if (creator) {
             const followerCount = await Follow.count({ where: { followee: creator.id } });
 
-            console.log(article.get());
             const payload: ArticleDto = {
               ...trimNull(article.get()),
               creator: { ...trimNull(creator.get()), followerCount },
             };
 
+            if (caller) {
+              const scrapped = await caller.getScraps();
+              console.log(scrapped);
+              const isScrapped = _.find(scrapped, (scrap) => scrap.get().articleId === article.id);
+              if (isScrapped) {
+                payload.isScrapped = true;
+              }
+            }
+
             // 본인 글인지 플래그 false일 시 포함하지 않음
             if (typeof caller !== 'undefined') {
-              const isMine = creator.id === caller.id;
+              const isMine = creator.id === caller?.id;
               if (isMine) {
                 payload.isMine = isMine;
               }
@@ -70,7 +78,7 @@ ArticleRouter.get('/article/:articleId', (req, res) => {
  */
 ArticleRouter.get('/articles', async (req, res) => {
   const { filter, offset } = makeFilter(req.query);
-  const caller = getCaller(req.header('Authorization'));
+  const caller = await getCaller(req.header('Authorization'));
 
   await Article.findAndCountAll({ offset, limit: filter.size, order: [['id', 'DESC']] })
     .then(async (result) => {
@@ -98,6 +106,19 @@ ArticleRouter.get('/articles', async (req, res) => {
               const isFollowing = _.find(follows.rows, { follower: caller?.id });
               if (isFollowing) {
                 payload.creator.isFollowing = true;
+              }
+
+              // isScrapped
+              if (caller) {
+                const scrapped = await caller.getScraps();
+                console.log(scrapped);
+                const isScrapped = _.find(
+                  scrapped,
+                  (scrap) => scrap.get().articleId === article.id,
+                );
+                if (isScrapped) {
+                  payload.isScrapped = true;
+                }
               }
 
               // isMine
@@ -134,7 +155,7 @@ ArticleRouter.get('/articles', async (req, res) => {
 ArticleRouter.get('/articles/:creatorId', async (req, res) => {
   try {
     const { filter, offset } = makeFilter(req.query);
-    const caller = getCaller(req.header('Authorization'));
+    const caller = await getCaller(req.header('Authorization'));
     const creatorId = Number(req.params.creatorId);
 
     const user = await User.findOne({ where: { id: creatorId } });
@@ -171,6 +192,18 @@ ArticleRouter.get('/articles/:creatorId', async (req, res) => {
                 const isFollowing = _.find(follows.rows, { follower: caller?.id });
                 if (isFollowing) {
                   payload.creator.isFollowing = true;
+                }
+
+                if (caller) {
+                  const scrapped = await caller.getScraps();
+                  console.log(scrapped);
+                  const isScrapped = _.find(
+                    scrapped,
+                    (scrap) => scrap.get().articleId === article.id,
+                  );
+                  if (isScrapped) {
+                    payload.isScrapped = true;
+                  }
                 }
 
                 if (typeof caller !== 'undefined') {
@@ -254,11 +287,11 @@ ArticleRouter.post('/article', async (req, res) => {
 /**
  * @updateArticle
  */
-ArticleRouter.put('/article/:articleId', (req, res) => {
+ArticleRouter.put('/article/:articleId', async (req, res) => {
   const { articleId } = req.params;
   const updatingArticle = req.body as ArticleDto;
 
-  const caller = getCaller(req.get('Authorization'));
+  const caller = await getCaller(req.get('Authorization'));
 
   // 작성자가 수정하고 있는지
   if (caller) {
@@ -294,7 +327,7 @@ ArticleRouter.put('/article/:articleId', (req, res) => {
 ArticleRouter.delete('/article/:articleId', async (req, res) => {
   const { articleId } = req.params;
 
-  const caller = getCaller(req.get('Authorization'));
+  const caller = await getCaller(req.get('Authorization'));
 
   const deletingArticle = await Article.findOne({ where: { id: articleId } });
   if (deletingArticle) {
