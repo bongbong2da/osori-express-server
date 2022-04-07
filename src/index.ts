@@ -1,3 +1,4 @@
+import * as http from 'http';
 import FirebaseApp from './firebase/FirebaseApp';
 import dotenv from 'dotenv';
 import express from 'express';
@@ -11,13 +12,11 @@ import FollowRouter from './routers/FollowRouter';
 import sequelize from './models';
 import ArticleRouter from './routers/ArticleRouter';
 import UserRouter from './routers/UserRouter';
+import { Server } from 'socket.io';
 
 const app = express();
 dotenv.config();
-console.log(process.env.NODE_ENV);
-console.log('starting env', process.env.NODE_ENV);
 let port = process.env.NODE_ENV === 'development' ? 3000 : 80;
-console.log('starting port', port);
 
 // Run with ts-node line port={port} parameter
 process.argv.forEach((arg) => {
@@ -30,6 +29,10 @@ process.argv.forEach((arg) => {
 app.use(cors());
 
 app.use(express.json());
+
+app.get('/chat', (req, res) => {
+  res.sendFile(`${__dirname}/test/chat.html`);
+});
 
 /**
  * @Authorization
@@ -115,6 +118,30 @@ app.use(FollowRouter);
 app.use(ScrapRouter);
 app.use(FeedRouter);
 
-app.listen(port, async () => {
-  console.log('SERVER_STARTED', port);
+// app.listen(port, async () => {
+//   console.log('SERVER_STARTED', port);
+// });
+
+/**
+ * @Socket.io
+ */
+const server = http.createServer(app);
+const socketIO = new Server(server);
+
+socketIO.on('connect', (socket) => {
+  console.log(`connected ${socket.id} ${JSON.stringify(socket.data)}`);
+  socket.on('chat message', (msg) => {
+    console.log(`message: ${msg} from ${socket.id}`);
+    if (msg) {
+      socket.emit('chat message', 'welcome');
+    }
+  });
+
+  socket.on('disconnect', () => {
+    console.log('disconnected');
+  });
+});
+
+server.listen(port, () => {
+  console.log('SERVER_STARTED_WITH', port);
 });
