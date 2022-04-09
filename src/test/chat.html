@@ -24,16 +24,15 @@
         </form>
     </body>
 <script>
-    const socket = io();
-    console.log(socket)
+    const socket = io('localhost:4885');
 
     const form = document.getElementById('form');
     const input = document.getElementById('input');
 
-    form.addEventListener('submit', function(e) {
+    form.addEventListener('submit', (e) => {
         e.preventDefault();
         if (input.value) {
-            socket.emit('chat message', input.value);
+            socket.emit('chat message', input.value, { data: 'init' });
             input.value = '';
         }
     });
@@ -43,6 +42,7 @@
         li.textContent = msg;
         const messages = document.getElementById('messages');
         messages.appendChild(li);
-    })
+    });
+
 </script>
 </html>

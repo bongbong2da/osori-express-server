@@ -1,6 +1,8 @@
 import * as Sequelize from 'sequelize';
 import { DataTypes, Model, Optional } from 'sequelize';
 import type { article, articleId } from './article';
+import type { chatMessage, chatMessageId } from './chatMessage';
+import type { chatRoom, chatRoomId } from './chatRoom';
 import type { follow, followId } from './follow';
 import type { scrap, scrapId } from './scrap';
 import type { token, tokenId } from './token';
@@ -57,6 +59,42 @@ export class user extends Model<userAttributes, userCreationAttributes> implemen
   hasArticle!: Sequelize.HasManyHasAssociationMixin<article, articleId>;
   hasArticles!: Sequelize.HasManyHasAssociationsMixin<article, articleId>;
   countArticles!: Sequelize.HasManyCountAssociationsMixin;
+  // user hasMany chatMessage via senderId
+  chatMessages!: chatMessage[];
+  getChatMessages!: Sequelize.HasManyGetAssociationsMixin<chatMessage>;
+  setChatMessages!: Sequelize.HasManySetAssociationsMixin<chatMessage, chatMessageId>;
+  addChatMessage!: Sequelize.HasManyAddAssociationMixin<chatMessage, chatMessageId>;
+  addChatMessages!: Sequelize.HasManyAddAssociationsMixin<chatMessage, chatMessageId>;
+  createChatMessage!: Sequelize.HasManyCreateAssociationMixin<chatMessage>;
+  removeChatMessage!: Sequelize.HasManyRemoveAssociationMixin<chatMessage, chatMessageId>;
+  removeChatMessages!: Sequelize.HasManyRemoveAssociationsMixin<chatMessage, chatMessageId>;
+  hasChatMessage!: Sequelize.HasManyHasAssociationMixin<chatMessage, chatMessageId>;
+  hasChatMessages!: Sequelize.HasManyHasAssociationsMixin<chatMessage, chatMessageId>;
+  countChatMessages!: Sequelize.HasManyCountAssociationsMixin;
+  // user hasMany chatRoom via maker
+  chatRooms!: chatRoom[];
+  getChatRooms!: Sequelize.HasManyGetAssociationsMixin<chatRoom>;
+  setChatRooms!: Sequelize.HasManySetAssociationsMixin<chatRoom, chatRoomId>;
+  addChatRoom!: Sequelize.HasManyAddAssociationMixin<chatRoom, chatRoomId>;
+  addChatRooms!: Sequelize.HasManyAddAssociationsMixin<chatRoom, chatRoomId>;
+  createChatRoom!: Sequelize.HasManyCreateAssociationMixin<chatRoom>;
+  removeChatRoom!: Sequelize.HasManyRemoveAssociationMixin<chatRoom, chatRoomId>;
+  removeChatRooms!: Sequelize.HasManyRemoveAssociationsMixin<chatRoom, chatRoomId>;
+  hasChatRoom!: Sequelize.HasManyHasAssociationMixin<chatRoom, chatRoomId>;
+  hasChatRooms!: Sequelize.HasManyHasAssociationsMixin<chatRoom, chatRoomId>;
+  countChatRooms!: Sequelize.HasManyCountAssociationsMixin;
+  // user hasMany chatRoom via partner
+  partnerChatRooms!: chatRoom[];
+  getPartnerChatRooms!: Sequelize.HasManyGetAssociationsMixin<chatRoom>;
+  setPartnerChatRooms!: Sequelize.HasManySetAssociationsMixin<chatRoom, chatRoomId>;
+  addPartnerChatRoom!: Sequelize.HasManyAddAssociationMixin<chatRoom, chatRoomId>;
+  addPartnerChatRooms!: Sequelize.HasManyAddAssociationsMixin<chatRoom, chatRoomId>;
+  createPartnerChatRoom!: Sequelize.HasManyCreateAssociationMixin<chatRoom>;
+  removePartnerChatRoom!: Sequelize.HasManyRemoveAssociationMixin<chatRoom, chatRoomId>;
+  removePartnerChatRooms!: Sequelize.HasManyRemoveAssociationsMixin<chatRoom, chatRoomId>;
+  hasPartnerChatRoom!: Sequelize.HasManyHasAssociationMixin<chatRoom, chatRoomId>;
+  hasPartnerChatRooms!: Sequelize.HasManyHasAssociationsMixin<chatRoom, chatRoomId>;
+  countPartnerChatRooms!: Sequelize.HasManyCountAssociationsMixin;
   // user hasMany follow via follower
   follows!: follow[];
   getFollows!: Sequelize.HasManyGetAssociationsMixin<follow>;
