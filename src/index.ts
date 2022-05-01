@@ -1,3 +1,4 @@
+import CommentRouter from './routers/CommentRouter';
 import FirebaseApp from './firebase/FirebaseApp';
 import dotenv from 'dotenv';
 import express from 'express';
@@ -114,6 +115,7 @@ app.use(ArticleRouter);
 app.use(FollowRouter);
 app.use(ScrapRouter);
 app.use(FeedRouter);
+app.use(CommentRouter);
 
 app.listen(port, async () => {
   console.log('SERVER_STARTED', port);

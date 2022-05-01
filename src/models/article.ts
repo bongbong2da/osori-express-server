@@ -1,5 +1,6 @@
 import * as Sequelize from 'sequelize';
 import { DataTypes, Model, Optional } from 'sequelize';
+import type { comment, commentId } from './comment';
 import type { scrap, scrapId } from './scrap';
 import type { user, userId } from './user';
 
@@ -35,6 +36,18 @@ export class article extends Model<articleAttributes, articleCreationAttributes>
   createDate!: string;
   modifyDate?: string;
 
+  // article hasMany comment via articleId
+  comments!: comment[];
+  getComments!: Sequelize.HasManyGetAssociationsMixin<comment>;
+  setComments!: Sequelize.HasManySetAssociationsMixin<comment, commentId>;
+  addComment!: Sequelize.HasManyAddAssociationMixin<comment, commentId>;
+  addComments!: Sequelize.HasManyAddAssociationsMixin<comment, commentId>;
+  createComment!: Sequelize.HasManyCreateAssociationMixin<comment>;
+  removeComment!: Sequelize.HasManyRemoveAssociationMixin<comment, commentId>;
+  removeComments!: Sequelize.HasManyRemoveAssociationsMixin<comment, commentId>;
+  hasComment!: Sequelize.HasManyHasAssociationMixin<comment, commentId>;
+  hasComments!: Sequelize.HasManyHasAssociationsMixin<comment, commentId>;
+  countComments!: Sequelize.HasManyCountAssociationsMixin;
   // article hasMany scrap via articleId
   scraps!: scrap[];
   getScraps!: Sequelize.HasManyGetAssociationsMixin<scrap>;
