@@ -1,4 +1,0 @@
-UserDto:
-  $ref: './UserDto.yaml'
-ArticleDto:
-  $ref: './ArticleDto.yaml'

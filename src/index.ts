@@ -1,11 +1,10 @@
+import FirebaseApp from './firebase/FirebaseApp';
 import dotenv from 'dotenv';
 import express from 'express';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import swaggerJSDoc, { SwaggerDefinition } from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
 import cors from 'cors';
-import fileUpload from 'express-fileupload';
-import FileRouter from './routers/FileRouter';
 import FeedRouter from './routers/FeedRouter';
 import ScrapRouter from './routers/ScrapRouter';
 import FollowRouter from './routers/FollowRouter';
@@ -14,9 +13,11 @@ import ArticleRouter from './routers/ArticleRouter';
 import UserRouter from './routers/UserRouter';
 
 const app = express();
-let port = 3000;
-
 dotenv.config();
+console.log(process.env.NODE_ENV);
+console.log('starting env', process.env.NODE_ENV);
+let port = process.env.NODE_ENV === 'development' ? 3000 : 80;
+console.log('starting port', port);
 
 // Run with ts-node line port={port} parameter
 process.argv.forEach((arg) => {
@@ -27,22 +28,20 @@ process.argv.forEach((arg) => {
 });
 
 app.use(cors());
+
 app.use(express.json());
-app.use(fileUpload());
 
 /**
  * @Authorization
  */
 const Token = sequelize.token;
 app.use((req, res, next) => {
-  console.log(req.path);
   if (req.path === '/user/login' || req.path.startsWith('/api-docs')) {
     next();
     return;
   }
 
   const accessToken = req.header('Authorization')?.split('Bearer ')[1];
-  console.log(accessToken);
 
   // 제공된 토근이 있다면
   if (typeof accessToken !== 'undefined') {
@@ -58,7 +57,6 @@ app.use((req, res, next) => {
         await Token.findOne({ where: { userId: user.id } }).then((token) => {
           if (token !== null) {
             const tokenFromDB = jwt.decode(token.accessToken!) as JwtPayload;
-            console.log('parsing token');
             if (tokenFromDB !== null) {
               if (user.exp < tokenFromDB.user.exp) {
                 // 토큰이 만료된 경우
@@ -95,10 +93,10 @@ const swaggerDefinitions: SwaggerDefinition = {
 
 const swagger = swaggerJSDoc({
   swaggerDefinition: swaggerDefinitions,
-  apis: ['build/swagger.yaml'],
+  apis: ['swagger/swagger.yaml'],
 });
 
-const jsonSchema = require('../build/swagger.json');
+const jsonSchema = require('../swagger/swagger.json');
 
 app.get('/api-docs/swagger.json', (req, res) => res.json(jsonSchema));
 app.use(
@@ -116,13 +114,6 @@ app.use(ArticleRouter);
 app.use(FollowRouter);
 app.use(ScrapRouter);
 app.use(FeedRouter);
-app.use(FileRouter);
-
-app.post('/clova/callback', (req, res) => {
-  if (req.statusCode === 200) {
-    res.send(req.body);
-  }
-});
 
 app.listen(port, async () => {
   console.log('SERVER_STARTED', port);

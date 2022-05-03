@@ -1,11 +1,17 @@
 import express from 'express';
 import jwt from 'jsonwebtoken';
+import FirebaseApp from '../firebase/FirebaseApp';
+import { messaging } from 'firebase-admin';
 import { trimNull } from '../utils/objectUtil';
 import sequelize from '../models';
 
 const FollowRouter = express.Router();
 const Follow = sequelize.follow;
 const User = sequelize.user;
+
+FirebaseApp();
+
+const msg = messaging();
 
 FollowRouter.post('/follow/:userId', async (req, res) => {
   try {
@@ -18,7 +24,18 @@ FollowRouter.post('/follow/:userId', async (req, res) => {
       throw { code: 409, message: '이미 팔로우한 유저입니다' };
     } else {
       Follow.create({ follower: follower.id, followee: followeeId })
-        .then((result) => {
+        .then(async (result) => {
+          await User.findOne({ where: { id: followeeId } }).then(async (target) => {
+            if (target && target.pushToken) {
+              msg.send({
+                token: target.pushToken,
+                notification: {
+                  title: `${follower.nickname}님이 팔로우하셨습니다`,
+                },
+              });
+            }
+          });
+
           res.send(result.get());
         })
         .catch(() => {

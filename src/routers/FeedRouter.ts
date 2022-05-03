@@ -1,5 +1,7 @@
 import express from 'express';
+import _ from 'lodash';
 import { Op } from 'sequelize';
+import { ArticleDto } from '../payloads/payloads';
 import sequelize from '../models';
 import { getCaller, makeFilter, makePagination, trimNull } from '../utils/objectUtil';
 
@@ -10,7 +12,7 @@ const Follow = sequelize.follow;
 
 FeedRouter.get('/feeds', async (req, res) => {
   const { filter, offset } = makeFilter(req.query);
-  const caller = getCaller(req.get('Authorization'));
+  const caller = await getCaller(req.get('Authorization'));
 
   if (!caller) {
     res.status(400);
@@ -32,10 +34,24 @@ FeedRouter.get('/feeds', async (req, res) => {
             const creator = await User.findOne({ where: { id: article.creatorId } });
             if (creator) {
               const followerCount = await Follow.count({ where: { followee: creator.id } });
-              return {
+
+              const payload: ArticleDto = {
                 ...trimNull(article.get()),
                 creator: { ...trimNull(creator.get()), followerCount },
               };
+
+              if (caller) {
+                const scrapped = await caller.getScraps();
+                console.log(scrapped);
+                const isScrapped = _.find(
+                  scrapped,
+                  (scrap) => scrap.get().articleId === article.id,
+                );
+                if (isScrapped) {
+                  payload.isScrapped = true;
+                }
+              }
+              return payload;
             }
             return {
               ...trimNull(article.get()),

@@ -4,9 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon --watch src --watch build --exec ts-node src/index port=80 &",
-    "dev": "nodemon --watch src --watch swagger/swagger.yaml --watch swagger/swagger.json --exec ts-node src/index.ts NODE_ENV=development",
-    "swagger": "swagger-cli bundle src/define/swagger.yaml --outfile build/swagger.yaml --type yaml && swagger-cli bundle src/define/swagger.yaml --outfile build/swagger.json --type json",
+    "start": "nodemon --watch src --watch swagger --exec ts-node src/index port=80 &",
+    "dev": "nodemon --watch src --watch swagger/swagger.yaml --watch swagger/swagger.json --exec ts-node src/index.ts",
+    "swagger": "swagger-cli bundle src/define/swagger.yaml --outfile swagger/swagger.yaml --type yaml && swagger-cli bundle src/define/swagger.yaml --outfile swagger/swagger.json --type json",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -15,7 +15,6 @@
   "devDependencies": {
     "@types/cors": "^2.8.12",
     "@types/express": "^4.17.13",
-    "@types/express-fileupload": "^1.2.2",
     "@types/lodash": "^4.14.178",
     "@types/node": "^17.0.4",
     "@types/swagger-jsdoc": "^6.0.1",
@@ -38,7 +37,7 @@
     "cors": "^2.8.5",
     "dotenv": "^16.0.0",
     "express": "^4.17.3",
-    "express-fileupload": "^1.3.1",
+    "firebase-admin": "^10.0.2",
     "jsonwebtoken": "^8.5.1",
     "lodash": "^4.17.21",
     "sequelize": "^6.16.1",

@@ -1,5 +1,7 @@
 import express from 'express';
-import { isUndefined } from 'lodash';
+import { messaging } from 'firebase-admin';
+import _, { isUndefined } from 'lodash';
+import FirebaseApp from '../firebase/FirebaseApp';
 import sequelize from '../models';
 import { article } from '../models/article';
 import { user } from '../models/user';
@@ -11,12 +13,16 @@ const Article = sequelize.article;
 const User = sequelize.user;
 const Follow = sequelize.follow;
 
+FirebaseApp();
+
+const msg = messaging();
+
 /**
  * @getArticle
  */
-ArticleRouter.get('/article/:articleId', (req, res) => {
+ArticleRouter.get('/article/:articleId', async (req, res) => {
   // @ts-ignore
-  const caller = getCaller(req.header('Authorization'));
+  const caller = await getCaller(req.header('Authorization'));
 
   const { articleId } = req.params;
   if (!isUndefined(articleId)) {
@@ -27,15 +33,23 @@ ArticleRouter.get('/article/:articleId', (req, res) => {
           if (creator) {
             const followerCount = await Follow.count({ where: { followee: creator.id } });
 
-            console.log(article.get());
             const payload: ArticleDto = {
               ...trimNull(article.get()),
               creator: { ...trimNull(creator.get()), followerCount },
             };
 
+            if (caller) {
+              const scrapped = await caller.getScraps();
+              console.log(scrapped);
+              const isScrapped = _.find(scrapped, (scrap) => scrap.get().articleId === article.id);
+              if (isScrapped) {
+                payload.isScrapped = true;
+              }
+            }
+
             // 본인 글인지 플래그 false일 시 포함하지 않음
             if (typeof caller !== 'undefined') {
-              const isMine = creator.id === caller.id;
+              const isMine = creator.id === caller?.id;
               if (isMine) {
                 payload.isMine = isMine;
               }
@@ -64,7 +78,7 @@ ArticleRouter.get('/article/:articleId', (req, res) => {
  */
 ArticleRouter.get('/articles', async (req, res) => {
   const { filter, offset } = makeFilter(req.query);
-  const caller = getCaller(req.header('Authorization'));
+  const caller = await getCaller(req.header('Authorization'));
 
   await Article.findAndCountAll({ offset, limit: filter.size, order: [['id', 'DESC']] })
     .then(async (result) => {
@@ -78,15 +92,34 @@ ArticleRouter.get('/articles', async (req, res) => {
             });
 
             if (creator) {
-              const followerCount = await Follow.count({ where: { followee: creator.id } });
+              const follows = await Follow.findAndCountAll({ where: { followee: creator.id } });
 
               const payload: ArticleDto = {
                 ...trimNull(article.get()),
                 creator: {
                   ...trimNull(creator.get()),
-                  followerCount,
+                  followerCount: follows.count,
                 },
               };
+
+              // isFollowing
+              const isFollowing = _.find(follows.rows, { follower: caller?.id });
+              if (isFollowing) {
+                payload.creator.isFollowing = true;
+              }
+
+              // isScrapped
+              if (caller) {
+                const scrapped = await caller.getScraps();
+                console.log(scrapped);
+                const isScrapped = _.find(
+                  scrapped,
+                  (scrap) => scrap.get().articleId === article.id,
+                );
+                if (isScrapped) {
+                  payload.isScrapped = true;
+                }
+              }
 
               // isMine
               if (typeof caller !== 'undefined') {
@@ -120,63 +153,87 @@ ArticleRouter.get('/articles', async (req, res) => {
  * @getArticlesByUserId
  */
 ArticleRouter.get('/articles/:creatorId', async (req, res) => {
-  const { filter, offset } = makeFilter(req.query);
-  const caller = getCaller(req.header('Authorization'));
-  const creatorId = Number(req.params.creatorId);
+  try {
+    const { filter, offset } = makeFilter(req.query);
+    const caller = await getCaller(req.header('Authorization'));
+    const creatorId = Number(req.params.creatorId);
 
-  const user = await User.findOne({ where: { id: creatorId } });
-  if (user) {
-    await Article.findAndCountAll({
-      offset,
-      limit: filter.size,
-      where: { creatorId },
-      order: [['id', 'DESC']],
-    }).then(async (result) => {
-      const { count, rows } = result;
-      const pagination = makePagination(filter, rows.length, count);
+    const user = await User.findOne({ where: { id: creatorId } });
+    if (user) {
+      await Article.findAndCountAll({
+        offset,
+        limit: filter.size,
+        where: { creatorId },
+        order: [['id', 'DESC']],
+      }).then(async (result) => {
+        const { count, rows } = result;
+        const pagination = makePagination(filter, rows.length, count);
 
-      if (rows) {
-        const payloads = await Promise.all(
-          rows.map(async (article) => {
-            const creator = await article.getCreator().catch((e) => {
-              res.status(500);
-              res.send(e);
-            });
+        if (rows) {
+          const payloads = await Promise.all(
+            rows.map(async (article) => {
+              const creator = await article.getCreator().catch((e) => {
+                res.status(500);
+                res.send(e);
+              });
 
-            if (creator) {
-              const followerCount = await Follow.count({ where: { followee: creator.id } });
+              if (creator) {
+                const follows = await Follow.findAndCountAll({ where: { followee: creator.id } });
 
-              const payload: ArticleDto = {
-                ...trimNull(article.get()),
-                creator: {
-                  ...trimNull(creator.get()),
-                  followerCount,
-                },
-              };
+                const payload: ArticleDto = {
+                  ...trimNull(article.get()),
+                  creator: {
+                    ...trimNull(creator.get()),
+                    followerCount: follows.count,
+                  },
+                };
 
-              if (typeof caller !== 'undefined') {
-                const isMine = creator.id === caller.id;
-                if (isMine) {
-                  payload.isMine = isMine;
+                // isFollowing
+                const isFollowing = _.find(follows.rows, { follower: caller?.id });
+                if (isFollowing) {
+                  payload.creator.isFollowing = true;
                 }
-              }
 
-              // @ts-ignore
-              delete payload.creatorId;
-              return payload;
-            }
-            return article;
-          }),
-        );
-        res.setHeader('X-Pagination', pagination);
-        res.send(payloads);
-      } else {
-        res.send([]);
-      }
-    });
-  } else {
-    res.status(400);
-    res.send('사용자를 찾을 수 없습니다.');
+                if (caller) {
+                  const scrapped = await caller.getScraps();
+                  console.log(scrapped);
+                  const isScrapped = _.find(
+                    scrapped,
+                    (scrap) => scrap.get().articleId === article.id,
+                  );
+                  if (isScrapped) {
+                    payload.isScrapped = true;
+                  }
+                }
+
+                if (typeof caller !== 'undefined') {
+                  const isMine = creator.id === caller.id;
+                  if (isMine) {
+                    payload.isMine = isMine;
+                  }
+                }
+
+                // @ts-ignore
+                delete payload.creatorId;
+                return payload;
+              }
+              return article;
+            }),
+          );
+          res.setHeader('X-Pagination', pagination);
+          res.send(payloads);
+        } else {
+          res.send([]);
+        }
+      });
+    } else {
+      res.status(400);
+      res.send('사용자를 찾을 수 없습니다.');
+    }
+  } catch (e) {
+    console.log(e);
+    res.status(500);
+    res.send('server error');
   }
 });
 
@@ -184,34 +241,57 @@ ArticleRouter.get('/articles/:creatorId', async (req, res) => {
  * @createArticle
  */
 ArticleRouter.post('/article', async (req, res) => {
-  const creatingArticle = req.body as article;
-  const creator = user.findOne({ where: { id: creatingArticle.creatorId } });
-  if (creator === null) {
-    res.send('user not found');
-    return;
-  }
+  try {
+    const creatingArticle = req.body as article;
+    const creator = await User.findOne({ where: { id: creatingArticle.creatorId } });
+    if (!creator) {
+      res.send('user not found');
+      return;
+    }
 
-  console.log('creating', creatingArticle);
-  Article.create(creatingArticle)
-    .then((result) => {
-      console.log('success');
-      res.send(result);
-    })
-    .catch((e) => {
-      console.log(e);
-      console.log('failed');
-      res.send(null);
-    });
+    console.log('creating', creatingArticle);
+    Article.create(creatingArticle)
+      .then(async (result) => {
+        creator.getFollows().then((follows) => {
+          if (follows) {
+            follows.forEach((follow) => {
+              follow.getFollowerUser().then((user) => {
+                if (user && user.pushToken) {
+                  msg.send({
+                    token: user.pushToken,
+                    notification: {
+                      title: `${creator.nickname}님이 새 글을 작성하였습니다`,
+                    },
+                  });
+                }
+              });
+            });
+          }
+        });
+
+        console.log('success');
+        res.send(result);
+      })
+      .catch((e) => {
+        console.log(e);
+        console.log('failed');
+        res.send(null);
+      });
+  } catch (e) {
+    console.log(e);
+    res.status(500);
+    res.send('server error');
+  }
 });
 
 /**
  * @updateArticle
  */
-ArticleRouter.put('/article/:articleId', (req, res) => {
+ArticleRouter.put('/article/:articleId', async (req, res) => {
   const { articleId } = req.params;
   const updatingArticle = req.body as ArticleDto;
 
-  const caller = getCaller(req.get('Authorization'));
+  const caller = await getCaller(req.get('Authorization'));
 
   // 작성자가 수정하고 있는지
   if (caller) {
@@ -247,7 +327,7 @@ ArticleRouter.put('/article/:articleId', (req, res) => {
 ArticleRouter.delete('/article/:articleId', async (req, res) => {
   const { articleId } = req.params;
 
-  const caller = getCaller(req.get('Authorization'));
+  const caller = await getCaller(req.get('Authorization'));
 
   const deletingArticle = await Article.findOne({ where: { id: articleId } });
   if (deletingArticle) {

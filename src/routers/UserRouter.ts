@@ -1,6 +1,6 @@
 import express from 'express';
 import jwt from 'jsonwebtoken';
-import { isUndefined } from 'lodash';
+import _, { isUndefined } from 'lodash';
 import { Op } from 'sequelize';
 import { UserDto } from '../payloads/payloads';
 import sequelize from '../models';
@@ -16,6 +16,7 @@ const Follow = sequelize.follow;
  * @getUser
  */
 UserRouter.get('/user/:userId', async (req, res) => {
+  const caller = await getCaller(req.header('Authorization'));
   const { userId } = req.params;
   const parameters = req.query;
 
@@ -51,6 +52,12 @@ UserRouter.get('/user/:userId', async (req, res) => {
           const followerCount = await Follow.count({ where: { followee: userId } });
           const followingCount = await Follow.count({ where: { follower: userId } });
           const payload: UserDto = { ...trimNull(result.get()), followerCount, followingCount };
+
+          const follows = await Follow.findAll({ where: { follower: caller?.id } });
+          const isFollowing = _.find(follows, { followee: Number(userId) });
+          if (isFollowing) {
+            payload.isFollowing = true;
+          }
 
           res.status(200);
           res.send(payload);
@@ -119,10 +126,10 @@ UserRouter.post('/user', (req, res) => {
 /**
  * @updateUser
  */
-UserRouter.put('/user/:userId', (req, res) => {
+UserRouter.put('/user/:userId', async (req, res) => {
   const { userId } = req.params;
 
-  const caller = getCaller(req.header('Authorization'));
+  const caller = await getCaller(req.header('Authorization'));
   if (caller) {
     if (caller.id !== Number(userId)) {
       res.status(400);
@@ -153,10 +160,10 @@ UserRouter.put('/user/:userId', (req, res) => {
 /**
  * @deleteUser
  */
-UserRouter.delete('/user/:userId', (req, res) => {
+UserRouter.delete('/user/:userId', async (req, res) => {
   const { userId } = req.params;
 
-  const caller = getCaller(req.header('Authorization'));
+  const caller = await getCaller(req.header('Authorization'));
   if (caller) {
     if (caller.id !== Number(userId)) {
       res.status(400);
@@ -180,6 +187,13 @@ UserRouter.delete('/user/:userId', (req, res) => {
 
 UserRouter.post('/user/login', async (req, res) => {
   const creatingUser = req.body as user;
+
+  const { pushToken } = req.query;
+  console.log(pushToken);
+  if (pushToken) creatingUser.pushToken = pushToken as string;
+
+  console.log(creatingUser);
+
   creatingUser.loginDate = new Date().toString();
   const { loginType } = creatingUser;
 
@@ -222,6 +236,11 @@ UserRouter.post('/user/login', async (req, res) => {
   });
 
   if (user) {
+    // PushToken이 제공됐을 시, 저장
+    if (pushToken) {
+      user.update({ pushToken: pushToken as string });
+    }
+
     await Token.findOne({ where: { userId: user.id } }).then(async (token) => {
       const accessToken = jwt.sign({ user: user.get() }, process.env.JWT_SECRET_KEY!, {
         algorithm: 'HS256',
