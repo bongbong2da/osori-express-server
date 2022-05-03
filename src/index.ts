@@ -1,4 +1,4 @@
-import FirebaseApp from './firebase/FirebaseApp';
+import FileRouter from './routers/FileRouter';
 import dotenv from 'dotenv';
 import express from 'express';
 import jwt, { JwtPayload } from 'jsonwebtoken';
@@ -11,6 +11,7 @@ import FollowRouter from './routers/FollowRouter';
 import sequelize from './models';
 import ArticleRouter from './routers/ArticleRouter';
 import UserRouter from './routers/UserRouter';
+import fileUpload from 'express-fileupload';
 
 const app = express();
 dotenv.config();
@@ -30,6 +31,7 @@ process.argv.forEach((arg) => {
 app.use(cors());
 
 app.use(express.json());
+app.use(fileUpload());
 
 /**
  * @Authorization
@@ -37,6 +39,11 @@ app.use(express.json());
 const Token = sequelize.token;
 app.use((req, res, next) => {
   if (req.path === '/user/login' || req.path.startsWith('/api-docs')) {
+    next();
+    return;
+  }
+
+  if (req.path.startsWith('/upload')) {
     next();
     return;
   }
@@ -114,6 +121,7 @@ app.use(ArticleRouter);
 app.use(FollowRouter);
 app.use(ScrapRouter);
 app.use(FeedRouter);
+app.use(FileRouter);
 
 app.listen(port, async () => {
   console.log('SERVER_STARTED', port);

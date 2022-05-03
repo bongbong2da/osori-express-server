@@ -1,18 +1,39 @@
-import { randomUUID } from 'crypto';
+import { S3 } from 'aws-sdk';
 import express from 'express';
+// @ts-ignore
+
+const awsConfig = require('../config/awsconfig.json');
 
 const FileRouter = express.Router();
+const s3 = new S3({
+  credentials: awsConfig,
+});
+const BUCKET_NAME = 'osori-bucket';
 
-FileRouter.post('/upload', (req, res) => {
-  if (!req.header('Content-Type')?.startsWith('multipart/form-data')) {
-    res.status(400);
-    res.send('잘못된 형식의 파일입니다.');
-    return;
-  }
-
-  res.send(req.body);
+FileRouter.get('/upload/test', (req, res) => {
+  res.send('done');
 });
 
-FileRouter.get('/file/:fileId', (req, res) => {});
+FileRouter.post('/upload', (req, res) => {
+  console.log(req.files?.file);
+  const params = {
+    Bucket: BUCKET_NAME,
+    // @ts-ignore
+    Key: req.files?.file?.name,
+    // @ts-ignore
+    Body: req.files?.file?.data,
+  };
+
+  s3.upload(params, (err: any, data: any) => {
+    if (err) {
+      console.log('FAILED_TO_SEND', err);
+      res.status(500).send(err);
+    } else {
+      console.log('SEND_SUCCESS');
+      // @ts-ignore
+      res.status(200).send(data.Location);
+    }
+  });
+});
 
 export default FileRouter;
