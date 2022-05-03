@@ -711,6 +711,31 @@
         }
       }
     },
+    "/upload": {
+      "post": {
+        "tags": [
+          "File"
+        ],
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "description": "test",
+        "parameters": [
+          {
+            "name": "file",
+            "in": "formData",
+            "type": "file"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "something"
+          }
+        }
+      }
+    },
     "/comments/{articleId}": {
       "get": {
         "tags": [
