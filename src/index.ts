@@ -1,4 +1,5 @@
 import FileRouter from './routers/FileRouter';
+import CommentRouter from './routers/CommentRouter';
 import dotenv from 'dotenv';
 import express from 'express';
 import jwt, { JwtPayload } from 'jsonwebtoken';
@@ -121,6 +122,7 @@ app.use(ArticleRouter);
 app.use(FollowRouter);
 app.use(ScrapRouter);
 app.use(FeedRouter);
+app.use(CommentRouter);
 app.use(FileRouter);
 
 app.listen(port, async () => {
