@@ -83,9 +83,6 @@ UserRouter.get('/users', async (req, res) => {
   await User.findAndCountAll({
     offset,
     limit: filter.size,
-    where: {
-      nickname: { [Op.substring]: filter.searchKeyword },
-    },
     order: [['id', 'DESC']],
   })
     .then((result) => {
