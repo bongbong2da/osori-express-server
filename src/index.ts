@@ -117,6 +117,8 @@ app.get('/', (req, res) => {
   res.send('OSORI_SERVER');
 });
 
+app.set('etag', false);
+
 app.use(UserRouter);
 app.use(ArticleRouter);
 app.use(FollowRouter);
