@@ -1,10 +1,9 @@
 import express from 'express';
 import jwt from 'jsonwebtoken';
 import _, { isUndefined } from 'lodash';
-import { Op } from 'sequelize';
-import { UserDto } from '../payloads/payloads';
 import sequelize from '../models';
 import { user } from '../models/user';
+import { UserDto } from '../payloads/payloads';
 import { getCaller, makeFilter, makePagination, trimNull } from '../utils/objectUtil';
 
 const UserRouter = express.Router();
@@ -91,19 +90,24 @@ UserRouter.get('/users', async (req, res) => {
       if (result.rows !== null) {
         const payload = await Promise.all(
           rows.map(async (user) => {
-            const isFollowing = await Follow.findOne({
+            // Trimming Null
+            const returningUser = trimNull(user.get());
+
+            // Containing Follower Count
+            returningUser.followerCount = await Follow.count({ where: { followee: user.id } });
+
+            // Containing Caller follows Target Flag
+            const isCallerFollowsTarget = await Follow.findOne({
               where: { follower: caller?.id, followee: user?.id },
             });
-            const complete = trimNull(user.get());
-            if (isFollowing !== null) {
-              complete.isFollowing = true;
+            if (isCallerFollowsTarget !== null) {
+              returningUser.isFollowing = true;
             }
-            return complete;
+            return returningUser;
           }),
         );
         const pagination = makePagination(filter, rows.length, count);
         res.setHeader('X-Pagination', pagination);
-        console.log('payload', payload);
         res.send(payload);
       } else {
         res.send('USERS_NOT_FOUND');
