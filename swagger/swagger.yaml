@@ -23,7 +23,7 @@ paths:
         - application/json
       parameters:
         - name: userId
-          type: string
+          type: integer
           required: true
           in: path
       responses:
@@ -43,7 +43,7 @@ paths:
         - name: userId
           required: true
           in: path
-          type: string
+          type: integer
         - name: user
           in: body
           schema:
@@ -65,7 +65,7 @@ paths:
         - name: userId
           required: true
           in: path
-          type: string
+          type: integer
       responses:
         '200':
           description: something
@@ -141,7 +141,7 @@ paths:
         - name: articleId
           required: true
           in: path
-          type: string
+          type: integer
       responses:
         '200':
           description: something
@@ -159,7 +159,7 @@ paths:
         - name: articleId
           required: true
           in: path
-          type: string
+          type: integer
         - name: article
           in: body
           schema:
@@ -181,7 +181,7 @@ paths:
         - name: articleId
           required: true
           in: path
-          type: string
+          type: integer
       responses:
         '200':
           description: something
@@ -200,11 +200,11 @@ paths:
         - name: page
           required: false
           in: query
-          type: string
+          type: integer
         - name: size
           required: false
           in: query
-          type: string
+          type: integer
       responses:
         '200':
           description: something
@@ -223,7 +223,7 @@ paths:
         - name: userId
           required: true
           in: path
-          type: string
+          type: integer
         - name: page
           required: false
           in: query
@@ -231,7 +231,7 @@ paths:
         - name: size
           required: false
           in: query
-          type: string
+          type: integer
       responses:
         '200':
           description: something
@@ -269,7 +269,7 @@ paths:
         - name: userId
           required: true
           in: path
-          type: string
+          type: integer
       responses:
         '200':
           description: something
@@ -287,7 +287,7 @@ paths:
         - name: userId
           required: true
           in: path
-          type: string
+          type: integer
       responses:
         '200':
           description: something
@@ -306,7 +306,7 @@ paths:
         - name: userId
           required: true
           in: path
-          type: string
+          type: integer
         - name: page
           required: false
           in: query
@@ -333,7 +333,7 @@ paths:
         - name: userId
           required: true
           in: path
-          type: string
+          type: integer
         - name: page
           required: false
           in: query
@@ -360,7 +360,7 @@ paths:
         - name: articleId
           required: true
           in: path
-          type: string
+          type: integer
       responses:
         '200':
           description: something
@@ -378,7 +378,7 @@ paths:
         - name: articleId
           required: true
           in: path
-          type: string
+          type: integer
       responses:
         '200':
           description: something
@@ -397,7 +397,7 @@ paths:
         - name: userId
           required: true
           in: path
-          type: string
+          type: integer
       responses:
         '200':
           description: something
@@ -415,10 +415,10 @@ paths:
       parameters:
         - name: page
           in: query
-          type: string
+          type: integer
         - name: size
           in: query
-          type: string
+          type: integer
       responses:
         '200':
           description: something
@@ -450,12 +450,16 @@ paths:
       produces:
         - application/json
       parameters:
+        - name: articleId
+          in: path
+          type: integer
+          required: true
         - name: page
           in: query
-          type: string
+          type: integer
         - name: size
           in: query
-          type: string
+          type: integer
       responses:
         '200':
           description: something
@@ -475,7 +479,7 @@ paths:
         - name: articleId
           required: true
           in: path
-          type: string
+          type: integer
       responses:
         '200':
           description: something
@@ -494,7 +498,7 @@ paths:
         - name: commentId
           required: true
           in: path
-          type: string
+          type: integer
       responses:
         '200':
           description: something
@@ -509,10 +513,10 @@ paths:
       produces:
         - application/json
       parameters:
-        - name: commentID
+        - name: commentId
           required: true
           in: path
-          type: string
+          type: integer
       responses:
         '200':
           description: something
@@ -530,10 +534,10 @@ paths:
       parameters:
         - name: page
           in: query
-          type: string
+          type: integer
         - name: size
           in: query
-          type: string
+          type: integer
       responses:
         '200':
           description: something
