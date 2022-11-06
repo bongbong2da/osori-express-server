@@ -86,21 +86,24 @@ UserRouter.get('/users', async (req, res) => {
     limit: filter.size,
     order: [['id', 'DESC']],
   })
-    .then((result) => {
+    .then(async (result) => {
       const { rows, count } = result;
       if (result.rows !== null) {
-        const payload = rows.map(async (user) => {
-          const isFollowing = await Follow.findOne({
-            where: { follower: caller?.id, followee: user?.id },
-          });
-          const complete = trimNull(user.get());
-          if (isFollowing !== null) {
-            complete.isFollowing = true;
-          }
-          return complete;
-        });
+        const payload = await Promise.all(
+          rows.map(async (user) => {
+            const isFollowing = await Follow.findOne({
+              where: { follower: caller?.id, followee: user?.id },
+            });
+            const complete = trimNull(user.get());
+            if (isFollowing !== null) {
+              complete.isFollowing = true;
+            }
+            return complete;
+          }),
+        );
         const pagination = makePagination(filter, rows.length, count);
         res.setHeader('X-Pagination', pagination);
+        console.log('payload', payload);
         res.send(payload);
       } else {
         res.send('USERS_NOT_FOUND');
